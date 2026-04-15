@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Banking - Secure. Smart. Seamless.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #050508;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        /* Sharp Animated Background */
+        .bg-sharp {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                #050508;
+            z-index: -3;
+        }
+        
+        /* Sharp Grid Lines */
+        .grid-sharp {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -2;
+            animation: gridScroll 20s linear infinite;
+        }
+        
+        @keyframes gridScroll {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+        
+        /* Sharp Geometric Shapes */
+        .geo-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .geo-shape {
+            position: absolute;
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            animation: geoFloat 12s infinite ease-in-out;
+        }
+        
+        .geo-triangle {
+            width: 0;
+            height: 0;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-bottom: 100px solid rgba(99, 102, 241, 0.1);
+            top: 15%;
+            right: 15%;
+            animation-delay: 0s;
+        }
+        
+        .geo-square {
+            width: 80px;
+            height: 80px;
+            border: 2px solid rgba(139, 92, 246, 0.4);
+            bottom: 25%;
+            left: 10%;
+            transform: rotate(45deg);
+            animation-delay: -4s;
+        }
+        
+        .geo-circle {
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 50%;
+            top: 60%;
+            right: 25%;
+            animation-delay: -8s;
+        }
+        
+        .geo-line {
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+            top: 30%;
+            left: 5%;
+            animation-delay: -6s;
+        }
+        
+        @keyframes geoFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.3; }
+            50% { transform: translate(20px, -20px) rotate(5deg); opacity: 0.6; }
+        }
+        
+        /* Sharp Card - No Blur */
+        .card-sharp {
+            background: rgba(10, 10, 15, 0.95);
+            border: 2px solid rgba(99, 102, 241, 0.5);
+            border-radius: 16px;
+            box-shadow: 
+                0 0 0 1px rgba(99, 102, 241, 0.3),
+                0 20px 50px rgba(0, 0, 0, 0.8),
+                0 0 30px rgba(99, 102, 241, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-sharp::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6366f1, #8b5cf6, transparent);
+        }
+        
+        .card-sharp::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+        }
+        
+        /* Corner Accents */
+        .corner-accent {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #6366f1;
+        }
+        
+        .corner-tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+        .corner-tr { top: -2px; right: -2px; border-left: 0; border-bottom: 0; }
+        .corner-bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; }
+        .corner-br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+        
+        /* Splash Screen */
+        .splash-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            background: #050508;
+            transition: opacity 0.6s ease, visibility 0.6s;
+        }
+        
+        .splash-container.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        
+        .logo-sharp {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin-bottom: 2rem;
+        }
+        
+        .logo-hex {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid #6366f1;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            animation: hexPulse 2s ease-in-out infinite;
+        }
+        
+        .logo-hex-inner {
+            position: absolute;
+            width: 70%;
+            height: 70%;
+            top: 15%;
+            left: 15%;
+            border: 2px solid #8b5cf6;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            animation: hexPulse 2s ease-in-out infinite reverse;
+        }
+        
+        .logo-center {
+            position: absolute;
+            width: 40%;
+            height: 40%;
+            top: 30%;
+            left: 30%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes hexPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        
+        .splash-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            position: relative;
+        }
+        
+        .splash-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        }
+        
+        .splash-subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1rem;
+            margin-top: 1.5rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+        
+        .splash-hint {
+            color: rgba(99, 102, 241, 0.8);
+            font-size: 0.875rem;
+            margin-top: 2rem;
+            letter-spacing: 0.1em;
+        }
+        
+        /* Sharp Form Container */
+        .form-container-sharp {
+            position: relative;
+            overflow: hidden;
+            min-height: 480px;
+        }
+        
+        .form-section-sharp {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+        }
+        
+        .form-section-sharp.login {
+            transform: translateX(0);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .form-section-sharp.signup {
+            transform: translateX(100%);
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .form-container-sharp.signup-active .form-section-sharp.login {
+            transform: translateX(-100%);
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .form-container-sharp.signup-active .form-section-sharp.signup {
+            transform: translateX(0);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Sharp Inputs */
+        .input-sharp {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+        
+        .input-sharp:focus {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), 0 0 20px rgba(99, 102, 241, 0.2);
+        }
+        
+        .input-sharp::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .input-group-sharp {
+            position: relative;
+            margin-bottom: 1.25rem;
+        }
+        
+        .input-icon-sharp {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(99, 102, 241, 0.6);
+            transition: color 0.2s;
+        }
+        
+        .input-sharp:focus + .input-icon-sharp {
+            color: #6366f1;
+        }
+        
+        /* Sharp Toggle */
+        .toggle-sharp {
+            display: flex;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            padding: 3px;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .toggle-slider-sharp {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: calc(50% - 3px);
+            height: calc(100% - 6px);
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 6px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+        
+        .toggle-sharp.signup-active .toggle-slider-sharp {
+            transform: translateX(100%);
+        }
+        
+        .toggle-btn-sharp {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+            transition: color 0.2s;
+        }
+        
+        .toggle-btn-sharp.active {
+            color: white;
+        }
+        
+        /* Sharp Button */
+        .btn-sharp {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-sharp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-sharp:active {
+            transform: translateY(0);
+        }
+        
+        .btn-sharp::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-sharp:hover::before {
+            left: 100%;
+        }
+        
+        /* Sharp Secondary Button */
+        .btn-secondary-sharp {
+            width: 100%;
+            padding: 0.875rem;
+            background: transparent;
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-secondary-sharp:hover {
+            border-color: #6366f1;
+            color: white;
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        /* Sharp Checkbox */
+        .checkbox-sharp {
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid rgba(99, 102, 241, 0.5);
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+        
+        .checkbox-sharp:checked {
+            background: #6366f1;
+            border-color: #6366f1;
+        }
+        
+        .checkbox-sharp:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        /* Password Strength - Sharp */
+        .strength-sharp {
+            margin-top: 0.5rem;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .strength-bar-sharp {
+            height: 100%;
+            transition: all 0.3s ease;
+            width: 0%;
+        }
+        
+        .strength-weak { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
+        .strength-fair { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
+        .strength-good { background: #3b82f6; box-shadow: 0 0 10px #3b82f6; }
+        .strength-strong { background: #10b981; box-shadow: 0 0 10px #10b981; }
+        
+        /* Match Indicator - Sharp */
+        .match-sharp {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .match-sharp.show { opacity: 1; }
+        .match-sharp.match { color: #10b981; }
+        .match-sharp.mismatch { color: #ef4444; }
+        
+        /* Sharp Alerts */
+        .alert-sharp {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            display: none;
+            border-left: 4px solid;
+            font-weight: 500;
+        }
+        
+        .alert-sharp.show { display: block; }
+        
+        .alert-error-sharp {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
+        
+        .alert-success-sharp {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: #10b981;
+            color: #86efac;
+        }
+        
+        /* Sharp Welcome */
+        .welcome-sharp {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .avatar-sharp {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            font-weight: 700;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        
+        .welcome-sharp h2 {
+            font-size: 1.5rem;
+            color: white;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+        
+        .welcome-sharp p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+        
+        .btn-sharp.loading .spinner { display: inline-block; }
+        .btn-sharp.loading .btn-text { display: none; }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Dashboard */
+        .dashboard {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #050508;
+            z-index: 10;
+            padding: 2rem;
+        }
+        
+        .dashboard.show { display: block; }
+        
+        /* Auth Container States */
+        #authContainer {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        #authContainer.visible { opacity: 1; }
+        
+        /* Divider */
+        .divider-sharp {
+            position: relative;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        
+        .divider-sharp::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+        }
+        
+        .divider-sharp span {
+            position: relative;
+            background: #0a0a0f;
+            padding: 0 1rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sharp Background -->
+    <div class="bg-sharp"></div>
+    <div class="grid-sharp"></div>
+    
+    <!-- Geometric Shapes -->
+    <div class="geo-shapes">
+        <div class="geo-shape geo-triangle"></div>
+        <div class="geo-shape geo-square"></div>
+        <div class="geo-shape geo-circle"></div>
+        <div class="geo-shape geo-line"></div>
+    </div>
+
+    <!-- Splash Screen -->
+    <div class="splash-container" id="splashScreen">
+        <div class="logo-sharp">
+            <div class="logo-hex"></div>
+            <div class="logo-hex-inner"></div>
+            <div class="logo-center">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+        </div>
+        <h1 class="splash-title font-display">NEXUS</h1>
+        <p class="splash-subtitle">Secure Banking</p>
+        <p class="splash-hint" id="splashHint">INITIALIZING...</p>
+    </div>
+
+    <!-- Main Auth Container -->
+    <div class="min-h-screen flex items-center justify-center p-4" id="authContainer" style="display: none;">
+        <div class="w-full max-w-md">
+            <!-- Sharp Auth Card -->
+            <div class="card-sharp p-8">
+                <!-- Corner Accents -->
+                <div class="corner-accent corner-tl"></div>
+                <div class="corner-accent corner-tr"></div>
+                <div class="corner-accent corner-bl"></div>
+                <div class="corner-accent corner-br"></div>
+                
+                <!-- Welcome Message -->
+                <div id="welcomeMessage"></div>
+
+                <!-- Sharp Toggle -->
+                <div class="toggle-sharp" id="toggleContainer">
+                    <div class="toggle-slider-sharp"></div>
+                    <button class="toggle-btn-sharp active" onclick="switchMode('login')" id="loginToggle">Sign In</button>
+                    <button class="toggle-btn-sharp" onclick="switchMode('signup')" id="signupToggle">Sign Up</button>
+                </div>
+
+                <!-- Alerts -->
+                <div class="alert-sharp alert-error-sharp" id="errorAlert"></div>
+                <div class="alert-sharp alert-success-sharp" id="successAlert"></div>
+
+                <!-- Forms Container -->
+                <div class="form-container-sharp" id="formContainer">
+                    <!-- Login Form -->
+                    <div class="form-section-sharp login" id="loginSection">
+                        <form id="loginForm" onsubmit="handleLogin(event)">
+                            <div class="input-group-sharp">
+                                <input type="email" class="input-sharp" id="loginEmail" placeholder="Email address" required>
+                                <svg class="input-icon-sharp" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </div>
+                            
+                            <div class="input-group-sharp">
+                                <input type="password" class="input-sharp" id="loginPassword" placeholder="Password" required>
+                                <svg class="input-icon-sharp" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </div>
+
+                            <div class="flex justify-between items-center mb-6 text-sm">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" class="checkbox-sharp">
+                                    <span class="text-gray-400">Remember me</span>
+                                </label>
+                                <a href="#" class="text-indigo-400 hover:text-indigo-300 transition-colors text-sm">Forgot?</a>
+                            </div>
+
+                            <button type="submit" class="btn-sharp" id="loginBtn">
+                                <span class="spinner"></span>
+                                <span class="btn-text">Sign In</span>
+                            </button>
+                        </form>
+
+                        <div class="divider-sharp">
+                            <span>Or</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <button class="btn-secondary-sharp" onclick="socialLogin('google')">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                                </svg>
+                                Google
+                            </button>
+                            <button class="btn-secondary-sharp" onclick="socialLogin('github')">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                                GitHub
+                            </button>
+                        </div>
+                        
+                        <div class="mt-6 text-center text-sm text-gray-400">
+                            No account? 
+                            <button onclick="switchMode('signup')" class="text-indigo-400 hover:text-indigo-300 font-medium ml-1 transition-colors">Create one</button>
+                        </div>
+                    </div>
+
+                    <!-- Sign Up Form -->
+                    <div class="form-section-sharp signup" id="signupSection">
+                        <form id="signupForm" onsubmit="handleSignup(event)">
+                            <div class="input-group-sharp">
+                                <input type="text" class="input-sharp" id="signupName" placeholder="Full name" required>
+                                <svg class="input-icon-sharp" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+
+                            <div class="input-group-sharp">
+                                <input type="email" class="input-sharp" id="signupEmail" placeholder="Email address" required>
+                                <svg class="input-icon-sharp" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </div>
+                            
+                            <div class="input-group-sharp">
+                                <input type="password" class="input-sharp" id="signupPassword" placeholder="Password" required minlength="6" oninput="checkPasswordStrength()">
+                                <svg class="input-icon-sharp" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                                <div class="strength-sharp" id="strengthContainer" style="display: none;">
+                                    <div class="strength-bar-sharp" id="strengthBar"></div>
+                                </div>
+                                <div class="text-xs mt-1" id="strengthText" style="color: rgba(255,255,255,0.4);"></div>
+                            </div>
+
+                            <div class="input-group-sharp">
+                                <input type="password" class="input-sharp" id="signupConfirmPassword" placeholder="Confirm password" required oninput="checkPasswordMatch()">
+                                <svg class="input-icon-sharp" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                </svg>
+                                <div class="match-sharp" id="matchIndicator">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" id="matchIcon">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    <span id="matchText">Passwords match</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-2 mb-6 text-sm">
+                                <input type="checkbox" id="terms" class="checkbox-sharp" required>
+                                <label for="terms" class="text-gray-400 text-xs leading-relaxed">
+                                    I agree to the <a href="#" class="text-indigo-400 hover:text-indigo-300">Terms</a> and <a href="#" class="text-indigo-400 hover:text-indigo-300">Privacy Policy</a>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn-sharp" id="signupBtn">
+                                <span class="spinner"></span>
+                                <span class="btn-text">Create Account</span>
+                            </button>
+                        </form>
+
+                        <div class="mt-6 text-center text-sm text-gray-400">
+                            Have an account? 
+                            <button onclick="switchMode('login')" class="text-indigo-400 hover:text-indigo-300 font-medium ml-1 transition-colors">Sign in</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="text-center text-gray-600 text-xs mt-6 tracking-widest uppercase">
+                Secured by 256-bit Encryption
+            </p>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex justify-between items-center mb-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center" style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold font-display text-white tracking-wider">NEXUS</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-400 text-sm" id="userEmail"></span>
+                    <button onclick="handleLogout()" class="px-4 py-2 bg-transparent border-2 border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium rounded">
+                        Sign Out
+                    </button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card-sharp p-6">
+                    <div class="text-gray-500 text-xs uppercase tracking-wider mb-2">Total Balance</div>
+                    <div class="text-3xl font-bold text-white font-display">$24,562.00</div>
+                    <div class="text-green-400 text-sm mt-2 flex items-center gap-1">
+                        <span class="text-xs">▲</span> +12.5% this month
+                    </div>
+                </div>
+                
+                <div class="card-sharp p-6">
+                    <div class="text-gray-500 text-xs uppercase tracking-wider mb-2">Income</div>
+                    <div class="text-2xl font-bold text-white font-display">$8,420.00</div>
+                    <div class="text-gray-600 text-sm mt-2">Last 30 days</div>
+                </div>
+                
+                <div class="card-sharp p-6">
+                    <div class="text-gray-500 text-xs uppercase tracking-wider mb-2">Expenses</div>
+                    <div class="text-2xl font-bold text-white font-display">$3,180.00</div>
+                    <div class="text-gray-600 text-sm mt-2">Last 30 days</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // REPLACE THESE WITH YOUR ACTUAL SUPABASE CREDENTIALS
+        // ==========================================
+        const SUPABASE_URL = 'https://your-actual-project-id.supabase.co';
+        const SUPABASE_ANON_KEY = 'your-actual-anon-key';
+        // ==========================================
+
+        let supabaseClient;
+        try {
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase initialized successfully');
+        } catch (e) {
+            console.error('Supabase init error:', e);
+        }
+
+        // Storage keys
+        const STORAGE_KEYS = {
+            HAS_ACCOUNT: 'nexus_has_account',
+            USER_EMAIL: 'nexus_user_email',
+            USER_NAME: 'nexus_user_name'
+        };
+
+        // Safe storage wrapper
+        const safeStorage = {
+            getItem: (key) => {
+                try { return localStorage.getItem(key); } 
+                catch (e) { return null; }
+            },
+            setItem: (key, value) => {
+                try { localStorage.setItem(key, value); return true; } 
+                catch (e) { return false; }
+            },
+            removeItem: (key) => {
+                try { localStorage.removeItem(key); return true; } 
+                catch (e) { return false; }
+            }
+        };
+
+        function hasAccount() {
+            return safeStorage.getItem(STORAGE_KEYS.HAS_ACCOUNT) === 'true';
+        }
+
+        function markAccountCreated(email, name) {
+            safeStorage.setItem(STORAGE_KEYS.HAS_ACCOUNT, 'true');
+            safeStorage.setItem(STORAGE_KEYS.USER_EMAIL, email);
+            safeStorage.setItem(STORAGE_KEYS.USER_NAME, name);
+        }
+
+        function getStoredUserInfo() {
+            return {
+                email: safeStorage.getItem(STORAGE_KEYS.USER_EMAIL) || '',
+                name: safeStorage.getItem(STORAGE_KEYS.USER_NAME) || ''
+            };
+        }
+
+        // Password Strength
+        function checkPasswordStrength() {
+            const password = document.getElementById('signupPassword').value;
+            const container = document.getElementById('strengthContainer');
+            const bar = document.getElementById('strengthBar');
+            const text = document.getElementById('strengthText');
+            
+            if (!password) { container.style.display = 'none'; text.textContent = ''; return; }
+            
+            container.style.display = 'block';
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            bar.className = 'strength-bar-sharp';
+            const levels = ['strength-weak', 'strength-fair', 'strength-good', 'strength-strong'];
+            const texts = ['Weak', 'Fair', 'Good', 'Strong'];
+            const colors = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981'];
+            
+            const level = Math.min(strength - 1, 3);
+            if (strength > 0) {
+                bar.classList.add(levels[level]);
+                text.textContent = texts[level] + ' password';
+                text.style.color = colors[level];
+            }
+        }
+
+        // Password Match
+        function checkPasswordMatch() {
+            const p1 = document.getElementById('signupPassword').value;
+            const p2 = document.getElementById('signupConfirmPassword').value;
+            const indicator = document.getElementById('matchIndicator');
+            const text = document.getElementById('matchText');
+            const icon = document.getElementById('matchIcon');
+            
+            if (!p2) { indicator.classList.remove('show'); return; }
+            
+            indicator.classList.add('show');
+            if (p1 === p2) {
+                indicator.className = 'match-sharp show match';
+                text.textContent = 'Passwords match';
+                icon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
+            } else {
+                indicator.className = 'match-sharp show mismatch';
+                text.textContent = 'Passwords do not match';
+                icon.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>';
+            }
+        }
+
+        // Initialize App
+        async function initializeApp() {
+            const splashHint = document.getElementById('splashHint');
+            const hasExisting = hasAccount();
+            
+            splashHint.textContent = hasExisting ? 'WELCOME BACK' : 'NEW USER DETECTED';
+            
+            await new Promise(r => setTimeout(r, 2000));
+            
+            document.getElementById('splashScreen').classList.add('hidden');
+            const authContainer = document.getElementById('authContainer');
+            authContainer.style.display = 'flex';
+            setTimeout(() => authContainer.classList.add('visible'), 50);
+            
+            hasExisting ? showLogin() : showSignup();
+        }
+
+        function showLogin() {
+            const info = getStoredUserInfo();
+            const initials = info.name ? info.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2) : 'U';
+            
+            document.getElementById('welcomeMessage').innerHTML = `
+                <div class="welcome-sharp">
+                    <div class="avatar-sharp">${initials}</div>
+                    <h2>Welcome Back${info.name ? ', ' + info.name.split(' ')[0] : ''}</h2>
+                    <p>Secure login required</p>
+                </div>
+            `;
+            
+            if (info.email) document.getElementById('loginEmail').value = info.email;
+            
+            document.getElementById('formContainer').classList.remove('signup-active');
+            document.getElementById('toggleContainer').classList.remove('signup-active');
+            document.getElementById('loginToggle').classList.add('active');
+            document.getElementById('signupToggle').classList.remove('active');
+            document.getElementById('loginSection').style.visibility = 'visible';
+            document.getElementById('signupSection').style.visibility = 'hidden';
+        }
+
+        function showSignup() {
+            document.getElementById('welcomeMessage').innerHTML = `
+                <div class="welcome-sharp">
+                    <div class="avatar-sharp" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">+</div>
+                    <h2>Create Account</h2>
+                    <p>Join the future of banking</p>
+                </div>
+            `;
+            
+            document.getElementById('formContainer').classList.add('signup-active');
+            document.getElementById('toggleContainer').classList.add('signup-active');
+            document.getElementById('loginToggle').classList.remove('active');
+            document.getElementById('signupToggle').classList.add('active');
+            document.getElementById('loginSection').style.visibility = 'hidden';
+            document.getElementById('signupSection').style.visibility = 'visible';
+        }
+
+        function switchMode(mode) {
+            const container = document.getElementById('formContainer');
+            const toggle = document.getElementById('toggleContainer');
+            const loginBtn = document.getElementById('loginToggle');
+            const signupBtn = document.getElementById('signupToggle');
+            
+            if (mode === 'signup') {
+                container.classList.add('signup-active');
+                toggle.classList.add('signup-active');
+                loginBtn.classList.remove('active');
+                signupBtn.classList.add('active');
+                setTimeout(() => {
+                    document.getElementById('loginSection').style.visibility = 'hidden';
+                    document.getElementById('signupSection').style.visibility = 'visible';
+                }, 250);
+            } else {
+                container.classList.remove('signup-active');
+                toggle.classList.remove('signup-active');
+                loginBtn.classList.add('active');
+                signupBtn.classList.remove('active');
+                setTimeout(() => {
+                    document.getElementById('signupSection').style.visibility = 'hidden';
+                    document.getElementById('loginSection').style.visibility = 'visible';
+                }, 250);
+            }
+            hideAlerts();
+        }
+
+        function showAlert(type, msg) {
+            hideAlerts();
+            const el = document.getElementById(type + 'Alert');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 5000);
+        }
+
+        function hideAlerts() {
+            document.getElementById('errorAlert').classList.remove('show');
+            document.getElementById('successAlert').classList.remove('show');
+        }
+
+        function setLoading(id, loading) {
+            const btn = document.getElementById(id);
+            btn.classList.toggle('loading', loading);
+            btn.disabled = loading;
+        }
+
+        // Auth Handlers
+        async function handleLogin(e) {
+            e.preventDefault();
+            if (!supabaseClient) { showAlert('error', 'Supabase not configured. Check your credentials.'); return; }
+            
+            setLoading('loginBtn', true);
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                
+                const name = data.user?.user_metadata?.full_name || '';
+                markAccountCreated(email, name);
+                showAlert('success', 'Login successful!');
+                setTimeout(() => showDashboard(data.user), 800);
+            } catch (err) {
+                showAlert('error', err.message);
+            } finally {
+                setLoading('loginBtn', false);
+            }
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            if (!supabaseClient) { showAlert('error', 'Supabase not configured. Check your credentials.'); return; }
+            
+            const password = document.getElementById('signupPassword').value;
+            const confirm = document.getElementById('signupConfirmPassword').value;
+            
+            if (password !== confirm) { showAlert('error', 'Passwords do not match'); return; }
+            
+            setLoading('signupBtn', true);
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            
+            try {
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email, password,
+                    options: { data: { full_name: name } }
+                });
+                
+                if (error) throw error;
+                
+                if (data.user?.identities?.length === 0) {
+                    showAlert('error', 'Account exists. Please sign in.');
+                    setTimeout(() => switchMode('login'), 1500);
+                    return;
+                }
+                
+                markAccountCreated(email, name);
+                showAlert('success', 'Account created!');
+                
+                if (data.session) {
+                    setTimeout(() => showDashboard(data.user), 1000);
+                } else {
+                    setTimeout(() => switchMode('login'), 1500);
+                }
+            } catch (err) {
+                showAlert('error', err.message);
+            } finally {
+                setLoading('signupBtn', false);
+            }
+        }
+
+        async function socialLogin(provider) {
+            if (!supabaseClient) { showAlert('error', 'Supabase not configured'); return; }
+            try {
+                const { error } = await supabaseClient.auth.signInWithOAuth({
+                    provider,
+                    options: { redirectTo: window.location.origin }
+                });
+                if (error) throw error;
+            } catch (err) {
+                showAlert('error', err.message);
+            }
+        }
+
+        function showDashboard(user) {
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('dashboard').classList.add('show');
+            document.getElementById('userEmail').textContent = user.email;
+        }
+
+        async function handleLogout() {
+            if (supabaseClient) await supabaseClient.auth.signOut();
+            document.getElementById('dashboard').classList.remove('show');
+            document.getElementById('authContainer').style.display = 'flex';
+            document.getElementById('loginForm').reset();
+            document.getElementById('signupForm').reset();
+            document.getElementById('strengthContainer').style.display = 'none';
+            document.getElementById('matchIndicator').classList.remove('show');
+            showLogin();
+        }
+
+        async function checkSession() {
+            if (!supabaseClient) return null;
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    const name = session.user?.user_metadata?.full_name || '';
+                    markAccountCreated(session.user.email, name);
+                    return session.user;
+                }
+            } catch (e) { console.error('Session check failed:', e); }
+            return null;
+        }
+
+        if (supabaseClient) {
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_IN' && session) {
+                    const name = session.user?.user_metadata?.full_name || '';
+                    markAccountCreated(session.user.email, name);
+                    showDashboard(session.user);
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const user = await checkSession();
+            if (user) {
+                document.getElementById('splashScreen').style.display = 'none';
+                showDashboard(user);
+            } else {
+                initializeApp();
+            }
+        });
+    </script>
+</body>
+</html>
