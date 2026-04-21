@@ -1168,6 +1168,18 @@
     </div>
 
     <script>
+        const SESSION_DURATION = 12 * 60 * 60 * 1000; // 12 hours in millisecond
+        // Check if user is admin
+        function isAdmin(user) {
+            // Check app_metadata for admin role (set by SQL trigger)
+            return user?.app_metadata?.role === 'admin';
+        }
+
+        // Get dashboard URL based on role
+        function getDashboardUrl(user) {
+            return isAdmin(user) ? 'admin-dashboard.html' : 'dashboard.html';
+        }
+
         // Initialize Supabase - REPLACE WITH YOUR CREDENTIALS
         const supabaseUrl = 'https://okgkawqvnygwkosoqbqb.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rZ2thd3F2bnlnd2tvc29xYnFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODA3MjgsImV4cCI6MjA5MTg1NjcyOH0.ctfeDvcXQ9OV8TvpsRKdgf7XLBxTHLouNfGn5_fHky8';
@@ -1222,11 +1234,13 @@
             return safeStorage.getItem(STORAGE_KEYS.HAS_ACCOUNT) === 'true';
         }
 
+   
         // Mark account as created
         function markAccountCreated(email, name) {
             safeStorage.setItem(STORAGE_KEYS.HAS_ACCOUNT, 'true');
             safeStorage.setItem(STORAGE_KEYS.USER_EMAIL, email);
             safeStorage.setItem(STORAGE_KEYS.USER_NAME, name);
+            safeStorage.setItem('nexus_session_start', Date.now().toString());
         }
 
         // Get stored user info
@@ -1242,6 +1256,20 @@
             safeStorage.removeItem(STORAGE_KEYS.HAS_ACCOUNT);
             safeStorage.removeItem(STORAGE_KEYS.USER_EMAIL);
             safeStorage.removeItem(STORAGE_KEYS.USER_NAME);
+            safeStorage.removeItem('nexus_session_start');
+        }
+        // Check if session has expired
+        function isSessionExpired() {
+            const sessionStart = safeStorage.getItem('nexus_session_start');
+            if (!sessionStart) return true;
+            
+            const elapsed = Date.now() - parseInt(sessionStart);
+            return elapsed > SESSION_DURATION;
+        }
+
+        // Clear session timer
+        function clearSessionTimer() {
+            safeStorage.removeItem('nexus_session_start');
         }
 
         // Create floating particles
@@ -1565,14 +1593,13 @@
         // ============================================
         // AUTH HANDLERS WITH REUSABLE SPLASH LOADER
         // ============================================
-        async function handleLogin(e) {
+       async function handleLogin(e) {
             e.preventDefault();
             hideAlerts();
             
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
-            // Show splash as auth loader (background animations stay visible!)
             showAuthLoader('Authenticating');
             
             try {
@@ -1585,18 +1612,18 @@
                 
                 if (error) throw error;
                 
-                // Update stored info on successful login
+                // Set session start and store role
                 if (data.user) {
                     const name = data.user.user_metadata?.full_name || '';
                     markAccountCreated(email, name);
+                    safeStorage.setItem('nexus_is_admin', isAdmin(data.user).toString());
                 }
                 
-                // Short delay to show success state
                 await new Promise(resolve => setTimeout(resolve, 800));
                 hideAuthLoader();
                 
                 showDashboard(data.user);
-                
+
             } catch (error) {
                 hideAuthLoader();
                 showAlert('error', error.message);
@@ -1607,7 +1634,6 @@
             e.preventDefault();
             hideAlerts();
             
-            // Check password match before submitting
             const password = document.getElementById('signupPassword').value;
             const confirmPassword = document.getElementById('signupConfirmPassword').value;
             
@@ -1619,7 +1645,7 @@
             const name = document.getElementById('signupName').value;
             const email = document.getElementById('signupEmail').value;
             
-            // Show splash as auth loader (background animations stay visible!)
+            // Show splash as auth loader
             showAuthLoader('Creating your account');
             
             try {
@@ -1637,7 +1663,6 @@
                 
                 if (error) throw error;
                 
-                // Check if user already exists
                 if (data.user?.identities?.length === 0) {
                     hideAuthLoader();
                     showAlert('error', 'An account with this email already exists. Please sign in instead.');
@@ -1645,7 +1670,7 @@
                     return;
                 }
                 
-                // Mark account as created in localStorage
+                // Mark account as created with session start
                 markAccountCreated(email, name);
                 
                 // Short delay to show success state
@@ -1665,7 +1690,6 @@
                 showAlert('error', error.message);
             }
         }
-
         // Social Login
         async function socialLogin(provider) {
             // Show splash as auth loader (background animations stay visible!)
@@ -1689,47 +1713,76 @@
             }
         }
 
-        // Show Dashboard
+        // Show Dashboard - redirects based on user role
         function showDashboard(user) {
-            document.getElementById('authContainer').style.display = 'none';
-            document.getElementById('dashboard').classList.add('show');
-            document.getElementById('userEmail').textContent = user.email;
+            // Check if session expired before redirecting
+            if (isSessionExpired()) {
+                clearAccountData();
+                window.location.href = "index.html";
+                return;
+            }
+            
+            // Store user info before redirect
+            if (user) {
+                const name = user.user_metadata?.full_name || '';
+                markAccountCreated(user.email, name);
+                safeStorage.setItem('nexus_is_admin', isAdmin(user).toString());
+            }
+            
+            // Redirect based on role
+            const dashboardUrl = getDashboardUrl(user);
+            console.log('User:', user.email, '| Is Admin:', isAdmin(user), '| Redirecting to:', dashboardUrl);
+            window.location.href = dashboardUrl;
         }
-
         // Handle Logout
         async function handleLogout() {
             try {
+                // Show loader during logout
+                showAuthLoader('Signing out');
+                
                 if (supabaseClient) {
                     await supabaseClient.auth.signOut();
                 }
                 
-                document.getElementById('dashboard').classList.remove('show');
-                document.getElementById('authContainer').style.display = 'flex';
-                document.getElementById('loginForm').reset();
-                document.getElementById('signupForm').reset();
+                // Clear all session data including timer
+                clearAccountData();
                 
-                // Reset password indicators
-                document.getElementById('strengthContainer').style.display = 'none';
-                document.getElementById('matchIndicator').classList.remove('show');
+                // Short delay for smooth transition
+                await new Promise(resolve => setTimeout(resolve, 500));
                 
-                // Show login with welcome
-                showLoginWithWelcome();
+                // Redirect to login page
+                window.location.href = "index.html";
                 
             } catch (error) {
+                hideAuthLoader();
                 showAlert('error', error.message);
             }
         }
 
         // Check existing session on load
+        // Check existing session on load
         async function checkSession() {
             if (!supabaseClient) return null;
             
             try {
+                // Check 12-hour time limit first
+                if (isSessionExpired()) {
+                    console.log('Session expired (12 hours)');
+                    await supabaseClient.auth.signOut();
+                    clearAccountData();
+                    return null;
+                }
+                
                 const { data: { session } } = await supabaseClient.auth.getSession();
+                
                 if (session) {
-                    // Update stored info
                     const name = session.user.user_metadata?.full_name || '';
                     markAccountCreated(session.user.email, name);
+                    
+                    // Store role info for reference
+                    const adminStatus = isAdmin(session.user);
+                    safeStorage.setItem('nexus_is_admin', adminStatus.toString());
+                    
                     return session.user;
                 }
             } catch (e) {
@@ -1737,8 +1790,7 @@
             }
             return null;
         }
-        
-        // Listen for auth changes
+                // Listen for auth changes
         if (supabaseClient) {
             supabaseClient.auth.onAuthStateChange((event, session) => {
                 if (event === 'SIGNED_IN' && session) {

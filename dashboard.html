@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Banking - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        /* Animated Background */
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+            z-index: -3;
+        }
+        
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float3d 20s infinite ease-in-out;
+        }
+        
+        .shape-1 {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            top: 5%;
+            left: 5%;
+            filter: blur(2px);
+        }
+        
+        .shape-2 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%;
+            bottom: 10%;
+            right: 5%;
+            filter: blur(3px);
+        }
+        
+        @keyframes float3d {
+            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            50% { transform: translate(30px, -30px) rotate(180deg) scale(1.1); }
+        }
+        
+        /* Glass Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        .glass-card-hover:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 100;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-item:hover, .sidebar-item.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: white;
+        }
+        
+        .sidebar-item.active {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        /* Balance Card */
+        .balance-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(10%, 10%); }
+        }
+        
+        /* Quick Actions */
+        .quick-action {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .quick-action:hover {
+            transform: translateY(-5px) scale(1.05);
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+        
+        /* Transaction Item */
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .transaction-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        
+        .transaction-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        /* Credit Card */
+        .credit-card {
+            width: 100%;
+            aspect-ratio: 1.586;
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.4);
+        }
+        
+        .credit-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+        }
+        
+        .card-chip {
+            width: 40px;
+            height: 30px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 6px;
+            position: relative;
+        }
+        
+        .card-chip::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: rgba(20, 20, 30, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            animation: modalSlide 0.3s ease;
+        }
+        
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* Loading State */
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+        
+        /* Utility Classes */
+        .text-gradient {
+            background: linear-gradient(135deg, #fff 0%, #6366f1 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background -->
+    <div class="gradient-bg"></div>
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="flex items-center gap-3 mb-10">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                <i class="fas fa-cube text-white"></i>
+            </div>
+            <span class="text-xl font-bold font-display">NEXUS</span>
+        </div>
+
+        <nav>
+            <div class="sidebar-item active" onclick="switchTab('dashboard')">
+                <i class="fas fa-home w-5"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="sidebar-item" onclick="switchTab('transactions')">
+                <i class="fas fa-exchange-alt w-5"></i>
+                <span>Transactions</span>
+            </div>
+            <div class="sidebar-item" onclick="switchTab('cards')">
+                <i class="fas fa-credit-card w-5"></i>
+                <span>Cards</span>
+            </div>
+            <div class="sidebar-item" onclick="switchTab('analytics')">
+                <i class="fas fa-chart-pie w-5"></i>
+                <span>Analytics</span>
+            </div>
+            <div class="sidebar-item" onclick="switchTab('transfer')">
+                <i class="fas fa-paper-plane w-5"></i>
+                <span>Transfer</span>
+            </div>
+        </nav>
+
+        <div class="mt-auto pt-10">
+            <div class="sidebar-item" onclick="showSettings()">
+                <i class="fas fa-cog w-5"></i>
+                <span>Settings</span>
+            </div>
+            <div class="sidebar-item" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt w-5"></i>
+                <span>Logout</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold font-display mb-1">
+                    Welcome back, <span id="userNameDisplay" class="text-gradient">Loading...</span>!
+                </h1>
+                <p class="text-gray-400" id="userEmailDisplay">Loading...</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors relative">
+                    <i class="fas fa-bell text-gray-400"></i>
+                    <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-gray-900"></span>
+                </button>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-semibold" id="userAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="space-y-6">
+            <!-- Top Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Total Balance -->
+                <div class="glass-card balance-card p-6 lg:col-span-2">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-white/70 mb-1">Total Balance</p>
+                            <h2 class="text-4xl font-bold font-display" id="totalBalance">$24,562.00</h2>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-sm flex items-center gap-1">
+                                <i class="fas fa-arrow-up text-xs"></i> +12.5%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 mt-6">
+                        <div class="flex-1">
+                            <p class="text-white/50 text-sm mb-1">Income</p>
+                            <p class="text-xl font-semibold text-green-400">+$8,420.00</p>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-white/50 text-sm mb-1">Expenses</p>
+                            <p class="text-xl font-semibold text-red-400">-$3,180.00</p>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-white/50 text-sm mb-1">Savings</p>
+                            <p class="text-xl font-semibold text-blue-400">$5,240.00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="glass-card p-6">
+                    <h3 class="font-semibold mb-4">Quick Actions</h3>
+                    <div class="grid grid-cols-4 gap-4">
+                        <div class="quick-action" onclick="openTransferModal()">
+                            <i class="fas fa-paper-plane text-indigo-400"></i>
+                        </div>
+                        <div class="quick-action" onclick="openDepositModal()">
+                            <i class="fas fa-plus text-green-400"></i>
+                        </div>
+                        <div class="quick-action" onclick="openPayModal()">
+                            <i class="fas fa-qrcode text-purple-400"></i>
+                        </div>
+                        <div class="quick-action" onclick="openMoreModal()">
+                            <i class="fas fa-ellipsis-h text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-4 mt-3 text-center text-xs text-gray-400">
+                        <span>Send</span>
+                        <span>Add</span>
+                        <span>Scan</span>
+                        <span>More</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Chart -->
+                <div class="glass-card p-6 lg:col-span-2">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-semibold">Spending Analytics</h3>
+                        <select class="bg-white/5 border border-white/10 rounded-lg px-3 py-1 text-sm outline-none focus:border-indigo-500 text-white">
+                            <option>This Week</option>
+                            <option>This Month</option>
+                            <option>This Year</option>
+                        </select>
+                    </div>
+                    <canvas id="spendingChart" height="100"></canvas>
+                </div>
+
+                <!-- My Cards -->
+                <div class="glass-card p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-semibold">My Cards</h3>
+                        <button class="text-indigo-400 text-sm hover:text-indigo-300">+ Add New</button>
+                    </div>
+                    <div class="credit-card mb-4">
+                        <div class="flex justify-between items-start mb-8">
+                            <div class="card-chip"></div>
+                            <i class="fab fa-cc-visa text-3xl text-white/80"></i>
+                        </div>
+                        <div class="mb-6">
+                            <p class="text-white/60 text-sm mb-1">Card Number</p>
+                            <p class="text-xl font-mono tracking-wider">**** **** **** 4582</p>
+                        </div>
+                        <div class="flex justify-between">
+                            <div>
+                                <p class="text-white/60 text-xs mb-1">Card Holder</p>
+                                <p class="font-semibold" id="cardHolderName">USER NAME</p>
+                            </div>
+                            <div>
+                                <p class="text-white/60 text-xs mb-1">Expires</p>
+                                <p class="font-semibold">12/26</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-400">Daily Limit</span>
+                        <span class="font-semibold">$2,500 / $5,000</span>
+                    </div>
+                    <div class="w-full bg-white/10 rounded-full h-2 mt-2">
+                        <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full" style="width: 50%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Recent Transactions -->
+                <div class="glass-card p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-semibold">Recent Transactions</h3>
+                        <button class="text-indigo-400 text-sm hover:text-indigo-300" onclick="switchTab('transactions')">View All</button>
+                    </div>
+                    <div class="space-y-3" id="recentTransactions">
+                        <!-- Transactions injected here -->
+                    </div>
+                </div>
+
+                <!-- Savings Goals -->
+                <div class="glass-card p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-semibold">Savings Goals</h3>
+                        <button class="text-indigo-400 text-sm hover:text-indigo-300">+ New Goal</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="glass-card-hover p-4 rounded-xl cursor-pointer">
+                            <div class="flex justify-between items-center mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                                        <i class="fas fa-plane text-blue-400"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold">Vacation Fund</p>
+                                        <p class="text-sm text-gray-400">Target: $5,000</p>
+                                    </div>
+                                </div>
+                                <span class="text-blue-400 font-semibold">75%</span>
+                            </div>
+                            <div class="w-full bg-white/10 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                            <p class="text-sm text-gray-400 mt-2">$3,750 saved</p>
+                        </div>
+
+                        <div class="glass-card-hover p-4 rounded-xl cursor-pointer">
+                            <div class="flex justify-between items-center mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                                        <i class="fas fa-car text-purple-400"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold">New Car</p>
+                                        <p class="text-sm text-gray-400">Target: $25,000</p>
+                                    </div>
+                                </div>
+                                <span class="text-purple-400 font-semibold">32%</span>
+                            </div>
+                            <div class="w-full bg-white/10 rounded-full h-2">
+                                <div class="bg-purple-500 h-2 rounded-full" style="width: 32%"></div>
+                            </div>
+                            <p class="text-sm text-gray-400 mt-2">$8,000 saved</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other Views (Hidden by default) -->
+        <div id="transactionsView" class="hidden space-y-6">
+            <div class="glass-card p-6">
+                <h2 class="text-2xl font-bold font-display mb-6">All Transactions</h2>
+                <div class="space-y-3" id="allTransactions"></div>
+            </div>
+        </div>
+
+        <div id="cardsView" class="hidden space-y-6">
+            <h2 class="text-2xl font-bold font-display">My Cards</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="credit-card">
+                    <div class="flex justify-between items-start mb-8">
+                        <div class="card-chip"></div>
+                        <i class="fab fa-cc-visa text-3xl text-white/80"></i>
+                    </div>
+                    <div class="mb-6">
+                        <p class="text-white/60 text-sm mb-1">Card Number</p>
+                        <p class="text-xl font-mono tracking-wider">**** **** **** 4582</p>
+                    </div>
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-white/60 text-xs mb-1">Card Holder</p>
+                            <p class="font-semibold" id="cardHolderName2">USER NAME</p>
+                        </div>
+                        <div>
+                            <p class="text-white/60 text-xs mb-1">Expires</p>
+                            <p class="font-semibold">12/26</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="analyticsView" class="hidden space-y-6">
+            <h2 class="text-2xl font-bold font-display">Analytics</h2>
+            <div class="glass-card p-6">
+                <canvas id="expenseChart"></canvas>
+            </div>
+        </div>
+
+        <div id="transferView" class="hidden space-y-6">
+            <div class="glass-card p-6 max-w-2xl mx-auto">
+                <h2 class="text-2xl font-bold font-display mb-6">Transfer Money</h2>
+                <form onsubmit="handleTransfer(event)">
+                    <div class="mb-4">
+                        <label class="block text-sm text-gray-400 mb-2">Amount</label>
+                        <input type="number" placeholder="0.00" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 outline-none focus:border-indigo-500 text-white" required>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity">Send Money</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Transfer Modal -->
+    <div class="modal" id="transferModal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Quick Transfer</h3>
+                <button onclick="closeModal('transferModal')" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form onsubmit="handleQuickTransfer(event)">
+                <div class="mb-4">
+                    <label class="block text-sm text-gray-400 mb-2">Recipient</label>
+                    <input type="text" placeholder="Enter email or phone" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 outline-none focus:border-indigo-500 text-white" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm text-gray-400 mb-2">Amount</label>
+                    <input type="number" placeholder="0.00" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 outline-none focus:border-indigo-500 text-white text-2xl font-bold" required>
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity">Send Now</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <div class="glass-card px-6 py-4 flex items-center gap-3">
+            <i class="fas fa-check-circle text-green-400 text-xl"></i>
+            <span id="toastMessage">Operation successful</span>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // SUPABASE CONFIGURATION - UPDATE THESE!
+        // ============================================
+        const supabaseUrl = 'https://okgkawqvnygwkosoqbqb.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rZ2thd3F2bnlnd2tvc29xYnFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODA3MjgsImV4cCI6MjA5MTg1NjcyOH0.ctfeDvcXQ9OV8TvpsRKdgf7XLBxTHLouNfGn5_fHky8';
+        
+        let supabaseClient;
+        let currentUser = null;
+        
+        try {
+            supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+        } catch (e) {
+            console.error('Supabase init error:', e);
+        }
+
+        // ============================================
+        // USER DATA MANAGEMENT
+        // ============================================
+        
+        // Fetch user data from Supabase
+        async function fetchUserData() {
+            if (!supabaseClient) {
+                console.error('Supabase not initialized');
+                // Fallback to localStorage
+                loadUserFromStorage();
+                return;
+            }
+            
+            try {
+                // Get current session
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+                
+                if (sessionError) throw sessionError;
+                
+                if (!session) {
+                    console.log('No active session, redirecting to login...');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                currentUser = session.user;
+                console.log('Current user:', currentUser);
+                
+                // Display user data
+                displayUserData(currentUser);
+                
+                // Also save to localStorage for backup
+                saveUserToStorage(currentUser);
+                
+            } catch (error) {
+                console.error('Error fetching user:', error);
+                // Fallback to localStorage
+                loadUserFromStorage();
+            }
+        }
+        
+        // Display user data in UI
+        function displayUserData(user) {
+            // Get user metadata
+            const fullName = user.user_metadata?.full_name || user.user_metadata?.name || 'User';
+            const email = user.email || 'No email';
+            
+            // Update UI elements
+            const nameElement = document.getElementById('userNameDisplay');
+            const emailElement = document.getElementById('userEmailDisplay');
+            const cardHolderElements = document.querySelectorAll('#cardHolderName, #cardHolderName2');
+            const avatarElement = document.getElementById('userAvatar');
+            
+            // Animate the update
+            if (nameElement) {
+                nameElement.style.opacity = '0';
+                setTimeout(() => {
+                    nameElement.textContent = fullName;
+                    nameElement.style.opacity = '1';
+                }, 200);
+            }
+            
+            if (emailElement) {
+                emailElement.textContent = email;
+            }
+            
+            // Update card holder names
+            cardHolderElements.forEach(el => {
+                if (el) el.textContent = fullName.toUpperCase();
+            });
+            
+            // Update avatar with initials
+            if (avatarElement) {
+                const initials = fullName
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .slice(0, 2);
+                avatarElement.textContent = initials;
+            }
+            
+            // Update page title
+            document.title = `Nexus Banking - ${fullName}`;
+        }
+        
+        // Save user to localStorage
+        function saveUserToStorage(user) {
+            try {
+                const fullName = user.user_metadata?.full_name || user.user_metadata?.name || 'User';
+                localStorage.setItem('nexus_user_name', fullName);
+                localStorage.setItem('nexus_user_email', user.email || '');
+                localStorage.setItem('nexus_user_id', user.id || '');
+            } catch (e) {
+                console.warn('Could not save to localStorage:', e);
+            }
+        }
+        
+        // Load user from localStorage (fallback)
+        function loadUserFromStorage() {
+            try {
+                const name = localStorage.getItem('nexus_user_name') || 'User';
+                const email = localStorage.getItem('nexus_user_email') || 'No email';
+                
+                const userData = {
+                    user_metadata: { full_name: name },
+                    email: email
+                };
+                
+                displayUserData(userData);
+            } catch (e) {
+                console.error('Could not load from localStorage:', e);
+            }
+        }
+        
+        // Listen for auth state changes
+        if (supabaseClient) {
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                console.log('Auth state changed:', event);
+                
+                if (event === 'SIGNED_IN' && session) {
+                    currentUser = session.user;
+                    displayUserData(currentUser);
+                    saveUserToStorage(currentUser);
+                } else if (event === 'SIGNED_OUT') {
+                    window.location.href = 'index.html';
+                } else if (event === 'USER_UPDATED' && session) {
+                    currentUser = session.user;
+                    displayUserData(currentUser);
+                    saveUserToStorage(currentUser);
+                }
+            });
+        }
+
+        // ============================================
+        // TRANSACTIONS DATA
+        // ============================================
+        
+        const mockTransactions = [
+            { id: 1, name: 'Apple Store', category: 'Shopping', amount: -1299.00, date: 'Today', icon: 'fa-apple', color: 'bg-gray-700 text-white' },
+            { id: 2, name: 'Salary Deposit', category: 'Income', amount: 8500.00, date: 'Yesterday', icon: 'fa-briefcase', color: 'bg-green-500/20 text-green-400' },
+            { id: 3, name: 'Netflix Subscription', category: 'Entertainment', amount: -15.99, date: 'Yesterday', icon: 'fa-play', color: 'bg-red-500/20 text-red-400' },
+            { id: 4, name: 'Uber Ride', category: 'Transport', amount: -24.50, date: '2 days ago', icon: 'fa-car', color: 'bg-yellow-500/20 text-yellow-400' },
+            { id: 5, name: 'Starbucks', category: 'Food', amount: -8.45, date: '3 days ago', icon: 'fa-coffee', color: 'bg-green-600/20 text-green-400' },
+        ];
+
+        function renderTransactions() {
+            const container = document.getElementById('recentTransactions');
+            const allContainer = document.getElementById('allTransactions');
+            
+            const html = mockTransactions.map(t => `
+                <div class="transaction-item">
+                    <div class="flex items-center gap-4">
+                        <div class="transaction-icon ${t.color}">
+                            <i class="fas ${t.icon}"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold">${t.name}</p>
+                            <p class="text-sm text-gray-400">${t.category} • ${t.date}</p>
+                        </div>
+                    </div>
+                    <span class="font-semibold ${t.amount > 0 ? 'text-green-400' : 'text-white'}">
+                        ${t.amount > 0 ? '+' : ''}$${Math.abs(t.amount).toFixed(2)}
+                    </span>
+                </div>
+            `).join('');
+            
+            if (container) container.innerHTML = html;
+            if (allContainer) allContainer.innerHTML = html;
+        }
+
+        // ============================================
+        // CHARTS
+        // ============================================
+        
+        function initCharts() {
+            const ctx = document.getElementById('spendingChart');
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Spending',
+                        data: [120, 190, 150, 250, 180, 320, 280],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { 
+                            grid: { color: 'rgba(255,255,255,0.05)' }, 
+                            ticks: { color: '#666' } 
+                        },
+                        x: { 
+                            grid: { display: false }, 
+                            ticks: { color: '#666' } 
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================
+        // NAVIGATION & UI
+        // ============================================
+        
+        function switchTab(tab) {
+            // Hide all views
+            ['dashboard', 'transactions', 'cards', 'analytics', 'transfer'].forEach(t => {
+                const el = document.getElementById(t + 'View');
+                if (el) el.classList.add('hidden');
+            });
+            
+            // Show selected view
+            const selectedEl = document.getElementById(tab + 'View');
+            if (selectedEl) selectedEl.classList.remove('hidden');
+            
+            // Update sidebar
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            if (event && event.target) {
+                event.target.closest('.sidebar-item').classList.add('active');
+            }
+        }
+
+        function openTransferModal() {
+            const modal = document.getElementById('transferModal');
+            if (modal) modal.classList.add('show');
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.remove('show');
+        }
+
+        function openDepositModal() {
+            showToast('Deposit feature coming soon!');
+        }
+
+        function openPayModal() {
+            showToast('QR Pay feature coming soon!');
+        }
+
+        function openMoreModal() {
+            showToast('More options coming soon!');
+        }
+
+        function showSettings() {
+            showToast('Settings page coming soon!');
+        }
+
+        function handleTransfer(e) {
+            e.preventDefault();
+            showToast('Transfer initiated successfully!');
+        }
+
+        function handleQuickTransfer(e) {
+            e.preventDefault();
+            closeModal('transferModal');
+            showToast('Money sent successfully!');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            if (toastMessage) toastMessage.textContent = message;
+            if (toast) {
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                setTimeout(() => {
+                    toast.classList.add('translate-y-20', 'opacity-0');
+                }, 3000);
+            }
+        }
+
+        async function handleLogout() {
+            if (!confirm('Are you sure you want to logout?')) return;
+            
+            // Sign out from Supabase
+            if (supabaseClient) {
+                await supabaseClient.auth.signOut();
+            }
+            
+            // Clear local storage
+            try {
+                localStorage.removeItem('nexus_has_account');
+                localStorage.removeItem('nexus_user_email');
+                localStorage.removeItem('nexus_user_name');
+                localStorage.removeItem('nexus_user_id');
+            } catch (e) {
+                console.warn('Could not clear localStorage:', e);
+            }
+            
+            // Redirect to auth page
+            window.location.href = 'index.html';
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Dashboard loading...');
+            
+            // Fetch user data first
+            fetchUserData();
+            
+            // Render other components
+            renderTransactions();
+            initCharts();
+        });
+    </script>
+</body>
+</html>
