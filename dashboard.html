@@ -6,15 +6,10 @@
     <title>Nexus Banking - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Inter', sans-serif;
@@ -23,56 +18,36 @@
             overflow-x: hidden;
         }
         
-        .font-display {
-            font-family: 'Space Grotesk', sans-serif;
-        }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
         
-        /* Animated Background */
         .gradient-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
             z-index: -3;
         }
         
         .floating-shapes {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            overflow: hidden;
-            pointer-events: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2; overflow: hidden; pointer-events: none;
         }
         
         .shape {
-            position: absolute;
-            opacity: 0.1;
+            position: absolute; opacity: 0.1;
             animation: float3d 20s infinite ease-in-out;
         }
         
         .shape-1 {
-            width: 400px;
-            height: 400px;
+            width: 400px; height: 400px;
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
             border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-            top: 5%;
-            left: 5%;
-            filter: blur(2px);
+            top: 5%; left: 5%; filter: blur(2px);
         }
         
         .shape-2 {
-            width: 300px;
-            height: 300px;
+            width: 300px; height: 300px;
             background: linear-gradient(135deg, #8b5cf6, #3b82f6);
             border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%;
-            bottom: 10%;
-            right: 5%;
-            filter: blur(3px);
+            bottom: 10%; right: 5%; filter: blur(3px);
         }
         
         @keyframes float3d {
@@ -80,7 +55,6 @@
             50% { transform: translate(30px, -30px) rotate(180deg) scale(1.1); }
         }
         
-        /* Glass Card */
         .glass-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(20px);
@@ -97,36 +71,24 @@
             transition: all 0.3s ease;
         }
         
-        /* Sidebar */
         .sidebar {
-            width: 280px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            background: rgba(10, 10, 15, 0.8);
+            width: 280px; height: 100vh; position: fixed; left: 0; top: 0;
+            background: rgba(10, 10, 15, 0.95);
             backdrop-filter: blur(20px);
             border-right: 1px solid rgba(255, 255, 255, 0.05);
-            z-index: 100;
-            padding: 2rem;
-            overflow-y: auto;
+            z-index: 100; padding: 2rem; overflow-y: auto;
+            transition: transform 0.3s ease;
         }
         
         .sidebar-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem 1.25rem;
-            border-radius: 12px;
-            color: rgba(255, 255, 255, 0.6);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 0.5rem;
+            display: flex; align-items: center; gap: 1rem;
+            padding: 1rem 1.25rem; border-radius: 12px;
+            color: rgba(255, 255, 255, 0.6); cursor: pointer;
+            transition: all 0.3s ease; margin-bottom: 0.5rem;
         }
         
         .sidebar-item:hover, .sidebar-item.active {
-            background: rgba(99, 102, 241, 0.1);
-            color: white;
+            background: rgba(99, 102, 241, 0.1); color: white;
         }
         
         .sidebar-item.active {
@@ -134,28 +96,37 @@
             border: 1px solid rgba(99, 102, 241, 0.3);
         }
         
-        /* Main Content */
         .main-content {
-            margin-left: 280px;
-            padding: 2rem;
-            min-height: 100vh;
+            margin-left: 280px; padding: 2rem; min-height: 100vh;
+            transition: margin-left 0.3s ease;
         }
         
-        /* Balance Card */
+        .mobile-header {
+            display: none; position: fixed; top: 0; left: 0; right: 0;
+            height: 60px; background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 99; padding: 0 1rem;
+            align-items: center; justify-content: space-between;
+        }
+        
+        .hamburger-btn {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: white; font-size: 1.2rem;
+        }
+        
         .balance-card {
             background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
             border: 1px solid rgba(99, 102, 241, 0.3);
-            position: relative;
-            overflow: hidden;
+            position: relative; overflow: hidden;
         }
         
         .balance-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
+            content: ''; position: absolute; top: -50%; right: -50%;
+            width: 100%; height: 100%;
             background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
             animation: shimmer 3s infinite;
         }
@@ -165,16 +136,10 @@
             50% { transform: translate(10%, 10%); }
         }
         
-        /* Quick Actions */
         .quick-action {
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            width: 60px; height: 60px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s ease;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -186,166 +151,676 @@
             box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
         }
         
-        /* Transaction Item */
         .transaction-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem; border-radius: 12px;
+            transition: all 0.3s ease; cursor: pointer;
         }
         
-        .transaction-item:hover {
-            background: rgba(255, 255, 255, 0.03);
-        }
+        .transaction-item:hover { background: rgba(255, 255, 255, 0.03); }
         
         .transaction-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
+            width: 48px; height: 48px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; flex-shrink: 0;
         }
         
-        /* Credit Card */
         .credit-card {
-            width: 100%;
-            aspect-ratio: 1.586;
-            border-radius: 16px;
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
+            width: 100%; aspect-ratio: 1.586; border-radius: 16px;
+            padding: 1.5rem; position: relative; overflow: hidden;
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
             box-shadow: 0 20px 40px rgba(99, 102, 241, 0.4);
         }
         
         .credit-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
+            content: ''; position: absolute; top: -50%; right: -50%;
+            width: 200%; height: 200%;
             background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
         }
         
         .card-chip {
-            width: 40px;
-            height: 30px;
+            width: 40px; height: 30px;
             background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            border-radius: 6px;
-            position: relative;
+            border-radius: 6px; position: relative;
         }
         
         .card-chip::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
+            content: ''; position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 30px;
-            height: 20px;
-            border: 1px solid rgba(0, 0, 0, 0.3);
-            border-radius: 4px;
+            width: 30px; height: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.3); border-radius: 4px;
         }
         
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+        
+        .sidebar-overlay {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); z-index: 99; backdrop-filter: blur(4px);
         }
         
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.02);
+        .sidebar-overlay.show { display: block; }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #fff 0%, #6366f1 50%, #8b5cf6 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
+        .empty-state {
+            text-align: center; padding: 3rem 1rem;
+            color: rgba(255, 255, 255, 0.4);
         }
         
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .empty-state i {
+            font-size: 3rem; margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.1);
         }
         
-        /* Modal */
-        .modal {
+        .time-badge {
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 0.5rem 1rem; border-radius: 12px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem; color: #a5b4fc;
+        }
+        
+        .page {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
+            margin-left: 280px; padding: 2rem; min-height: 100vh;
+        }
+        
+        .page.active { display: block; }
+        
+        .form-group { margin-bottom: 1.25rem; }
+        
+        .form-group label {
+            display: block; margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px; padding: 0.875rem 1.25rem;
+            color: white; font-size: 1rem; outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255, 255, 255, 0.3); }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .optional-label::after {
+            content: ' (Optional)';
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.8rem;
+            font-weight: 400;
+        }
+        
+        .btn-primary {
+            width: 100%; padding: 1rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none; border-radius: 12px; color: white;
+            font-weight: 600; font-size: 1rem; cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5; cursor: not-allowed; transform: none;
+        }
+        
+        .btn-secondary {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px; color: white;
+            font-weight: 500; cursor: pointer;
+            transition: all 0.3s ease; display: inline-flex;
+            align-items: center; gap: 0.5rem;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-outline {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            border-radius: 12px; color: #a5b4fc;
+            font-weight: 500; cursor: pointer;
+            transition: all 0.3s ease; display: inline-flex;
+            align-items: center; gap: 0.5rem;
+        }
+        
+        .btn-outline:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.6);
+        }
+        
+        #toast {
+            position: fixed; bottom: 6rem; right: 2rem;
+            transform: translateY(20px); opacity: 0;
+            transition: all 0.3s ease; z-index: 1001;
+        }
+        
+        #toast.show { transform: translateY(0); opacity: 1; }
+        
+        /* Saved Account Card */
+        .saved-account {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .saved-account:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+        
+        .saved-account.selected {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+        
+        .account-avatar {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1.2rem;
+        }
+        
+        .add-new-account {
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
             align-items: center;
             justify-content: center;
+            gap: 0.75rem;
+            padding: 1.25rem;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.5);
         }
         
-        .modal.show {
+        .add-new-account:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            color: #a5b4fc;
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        /* Preview Modal */
+        .preview-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .preview-overlay.show { display: flex; }
+        
+        .preview-card {
+            background: rgba(20, 20, 35, 0.98);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 24px;
+            padding: 2rem;
+            width: 100%; max-width: 500px;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .preview-row {
+            display: flex; justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .preview-label { color: rgba(255, 255, 255, 0.5); font-size: 0.9rem; }
+        .preview-value { font-weight: 600; text-align: right; }
+        
+        /* Pending Alert */
+        .pending-alert {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 16px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        /* ============================================
+           NOTIFICATION SYSTEM STYLES
+           ============================================ */
+        .notification-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 380px;
+            max-width: 100%;
+            height: 100vh;
+            background: rgba(15, 15, 25, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 200;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .notification-panel.open {
+            transform: translateX(0);
+        }
+        
+        .notification-panel-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .notification-panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        
+        .notification-panel-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .notification-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 199;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .notification-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+        
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .notification-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+        
+        .notification-item.unread {
+            background: rgba(99, 102, 241, 0.06);
+            border-left: 3px solid #6366f1;
+        }
+        
+        .notification-item.unread:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .notification-icon.success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .notification-icon.warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .notification-icon.error { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .notification-icon.info { background: rgba(99, 102, 241, 0.15); color: #6366f1; }
+        .notification-icon.transfer { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+        .notification-icon.login { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .notification-icon.security { background: rgba(236, 72, 153, 0.15); color: #ec4899; }
+        
+        .notification-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            color: white;
+        }
+        
+        .notification-message {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.5;
+        }
+        
+        .notification-time {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.35);
+            margin-top: 0.25rem;
+            font-family: 'Space Grotesk', monospace;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            min-width: 18px;
+            height: 18px;
+            background: #ef4444;
+            border-radius: 9px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+            border: 2px solid #0a0a0f;
+        }
+        
+        .notification-dot {
+            width: 8px;
+            height: 8px;
+            background: #6366f1;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 6px;
+        }
+        
+        .notification-empty {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .notification-empty i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.2;
+        }
+        
+        .notification-filter-btn {
+            padding: 0.4rem 0.875rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .notification-filter-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+        
+        .notification-filter-btn.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: #a5b4fc;
+        }
+        
+        .notification-toast {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(20, 20, 35, 0.98);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            z-index: 1002;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 360px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        .notification-toast.show {
+            transform: translateX(0);
+        }
+        
+        .notification-toast-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        @media (max-width: 1024px) {
+            .mobile-header { display: flex; }
+            .sidebar { transform: translateX(-100%); z-index: 101; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content, .page {
+                margin-left: 0; padding: 1rem; padding-top: 80px;
+            }
+            .grid-cols-1.lg\:grid-cols-3,
+            .grid-cols-1.lg\:grid-cols-2 { grid-template-columns: 1fr !important; }
+            .balance-card h2 { font-size: 2rem !important; }
+            .quick-action { width: 70px; height: 70px; }
+            .transaction-item { padding: 0.75rem; }
+            .transaction-icon { width: 40px; height: 40px; font-size: 1rem; }
+            header { flex-direction: column; align-items: flex-start !important; gap: 1rem; margin-bottom: 1.5rem !important; }
+            header h1 { font-size: 1.5rem !important; }
+            .credit-card { padding: 1rem; }
+            .credit-card .text-xl { font-size: 1rem !important; }
+            .form-row { grid-template-columns: 1fr; }
+            .pending-alert { flex-direction: column; text-align: center; }
+            .notification-panel { width: 100%; }
+        }
+        
+        @media (max-width: 640px) {
+            .main-content, .page { padding: 0.75rem; padding-top: 80px; }
+            .balance-card h2 { font-size: 1.75rem !important; }
+            .quick-action { width: 60px; height: 60px; }
+        }
+
+        /* ============================================
+           NEXUS LOADER (from index.html)
+           ============================================ */
+        .nexus-loader-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 15, 0.98);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s ease, visibility 0.4s;
+        }
+        
+        .nexus-loader-overlay.show {
             display: flex;
         }
         
-        .modal-content {
-            background: rgba(20, 20, 30, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 2rem;
-            width: 90%;
-            max-width: 500px;
-            animation: modalSlide 0.3s ease;
+        .nexus-loader-overlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
         }
         
-        @keyframes modalSlide {
-            from {
-                opacity: 0;
-                transform: translateY(-50px) scale(0.95);
+        .nexus-logo-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin-bottom: 2rem;
+            transform-style: preserve-3d;
+        }
+        
+        .nexus-logo-ring {
+            position: absolute;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            animation: rotate3d 4s linear infinite;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .nexus-logo-ring:nth-child(1) {
+            width: 100%; height: 100%;
+            border-top-color: #6366f1;
+            border-right-color: #6366f1;
+            animation-duration: 4s;
+        }
+        
+        .nexus-logo-ring:nth-child(2) {
+            width: 75%; height: 75%;
+            top: 12.5%; left: 12.5%;
+            border-bottom-color: #8b5cf6;
+            border-left-color: #8b5cf6;
+            animation-duration: 3s;
+            animation-direction: reverse;
+        }
+        
+        .nexus-logo-ring:nth-child(3) {
+            width: 50%; height: 50%;
+            top: 25%; left: 25%;
+            border-top-color: #3b82f6;
+            border-bottom-color: #3b82f6;
+            animation-duration: 2s;
+        }
+        
+        .nexus-logo-center {
+            position: absolute;
+            width: 35%; height: 35%;
+            top: 32.5%; left: 32.5%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse3d 2s ease-in-out infinite;
+            box-shadow: 
+                0 0 30px rgba(99, 102, 241, 0.6),
+                0 0 60px rgba(99, 102, 241, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+        
+        @keyframes rotate3d {
+            from { transform: rotateY(0deg) rotateX(10deg); }
+            to { transform: rotateY(360deg) rotateX(10deg); }
+        }
+        
+        @keyframes pulse3d {
+            0%, 100% { 
+                transform: scale(1) translateZ(20px); 
+                box-shadow: 0 0 30px rgba(99, 102, 241, 0.6), 0 0 60px rgba(99, 102, 241, 0.3);
             }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
+            50% { 
+                transform: scale(1.1) translateZ(40px); 
+                box-shadow: 0 0 50px rgba(99, 102, 241, 0.8), 0 0 100px rgba(99, 102, 241, 0.5);
             }
         }
         
-        /* Loading State */
-        .skeleton {
-            background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 8px;
+        .nexus-loader-text {
+            text-align: center;
+            animation: fadeInUp 0.6s ease;
         }
         
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-            
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            
-            .main-content {
-                margin-left: 0;
-            }
-        }
-        
-        /* Utility Classes */
-        .text-gradient {
+        .nexus-loader-title {
+            font-size: 2rem;
+            font-weight: 700;
             background: linear-gradient(135deg, #fff 0%, #6366f1 50%, #8b5cf6 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            letter-spacing: -0.02em;
+            text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        .nexus-loader-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .nexus-loader-dots {
+            display: inline-flex;
+            gap: 4px;
+            margin-left: 4px;
+        }
+        
+        .nexus-loader-dots span {
+            animation: dotPulse 1.4s ease-in-out infinite both;
+        }
+        
+        .nexus-loader-dots span:nth-child(1) { animation-delay: 0s; }
+        .nexus-loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .nexus-loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes dotPulse {
+            0%, 80%, 100% { opacity: 0; transform: scale(0); }
+            40% { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -357,6 +832,103 @@
         <div class="shape shape-2"></div>
     </div>
 
+    <!-- ============================================
+         NEXUS LOADER
+         ============================================ -->
+    <div class="nexus-loader-overlay" id="nexusLoader">
+        <div class="nexus-logo-container">
+            <div class="nexus-logo-ring"></div>
+            <div class="nexus-logo-ring"></div>
+            <div class="nexus-logo-ring"></div>
+            <div class="nexus-logo-center">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+        </div>
+        <div class="nexus-loader-text">
+            <h1 class="nexus-loader-title font-display">NEXUS</h1>
+            <p class="nexus-loader-subtitle" id="loaderSubtitle">Processing<span class="nexus-loader-dots"><span>.</span><span>.</span><span>.</span></span></p>
+        </div>
+    </div>
+
+    <!-- ============================================
+         NOTIFICATION PANEL
+         ============================================ -->
+    <div class="notification-overlay" id="notificationOverlay" onclick="closeNotificationPanel()"></div>
+    
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-panel-header">
+            <div>
+                <h3 class="font-bold font-display text-lg">Notifications</h3>
+                <p class="text-xs text-gray-400 mt-0.5" id="notificationCountText">No new notifications</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors" onclick="markAllAsRead()" title="Mark all as read">
+                    <i class="fas fa-check-double text-gray-400 text-xs"></i>
+                </button>
+                <button class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors" onclick="closeNotificationPanel()">
+                    <i class="fas fa-times text-gray-400"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="flex gap-2 px-4 pt-3 pb-1">
+            <button class="notification-filter-btn active" onclick="filterNotifications('all')" id="filterAll">All</button>
+            <button class="notification-filter-btn" onclick="filterNotifications('unread')" id="filterUnread">Unread</button>
+            <button class="notification-filter-btn" onclick="filterNotifications('transfers')" id="filterTransfers">Transfers</button>
+            <button class="notification-filter-btn" onclick="filterNotifications('security')" id="filterSecurity">Security</button>
+        </div>
+        
+        <div class="notification-panel-body" id="notificationList">
+            <!-- Notifications injected here -->
+        </div>
+        
+        <div class="notification-panel-footer">
+            <button class="btn-secondary w-full justify-center text-sm" onclick="clearAllNotifications()">
+                <i class="fas fa-trash-alt text-xs"></i> Clear All History
+            </button>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="notification-toast" id="notificationToast">
+        <div class="notification-toast-icon info" id="toastIcon">
+            <i class="fas fa-bell text-white"></i>
+        </div>
+        <div>
+            <p class="font-semibold text-sm" id="toastTitle">New Notification</p>
+            <p class="text-xs text-gray-400" id="toastMessage">Something happened</p>
+        </div>
+    </div>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="flex items-center gap-3">
+            <button class="hamburger-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                    <i class="fas fa-cube text-white text-sm"></i>
+                </div>
+                <span class="text-lg font-bold font-display">NEXUS</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <button class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center relative" onclick="openNotificationPanel()">
+                <i class="fas fa-bell text-gray-400 text-sm"></i>
+                <span class="notification-badge hidden" id="mobileNotificationBadge">0</span>
+            </button>
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-semibold text-sm" id="mobileUserAvatar">
+                <i class="fas fa-user text-xs"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="flex items-center gap-3 mb-10">
@@ -367,25 +939,28 @@
         </div>
 
         <nav>
-            <div class="sidebar-item active" onclick="switchTab('dashboard')">
+            <div class="sidebar-item active" onclick="showDashboard()">
                 <i class="fas fa-home w-5"></i>
                 <span>Dashboard</span>
             </div>
-            <div class="sidebar-item" onclick="switchTab('transactions')">
+            <div class="sidebar-item" onclick="handleTransferNav()">
+                <i class="fas fa-paper-plane w-5"></i>
+                <span>Transfer</span>
+                <span id="transferLockBadge" class="hidden ml-auto px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
+                    <i class="fas fa-clock"></i>
+                </span>
+            </div>
+            <div class="sidebar-item" onclick="showTransactionsPage()">
                 <i class="fas fa-exchange-alt w-5"></i>
                 <span>Transactions</span>
             </div>
-            <div class="sidebar-item" onclick="switchTab('cards')">
+            <div class="sidebar-item" onclick="showCardsPage()">
                 <i class="fas fa-credit-card w-5"></i>
                 <span>Cards</span>
             </div>
-            <div class="sidebar-item" onclick="switchTab('analytics')">
+            <div class="sidebar-item" onclick="showAnalyticsPage()">
                 <i class="fas fa-chart-pie w-5"></i>
                 <span>Analytics</span>
-            </div>
-            <div class="sidebar-item" onclick="switchTab('transfer')">
-                <i class="fas fa-paper-plane w-5"></i>
-                <span>Transfer</span>
             </div>
         </nav>
 
@@ -401,9 +976,8 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Header -->
+    <!-- ==================== DASHBOARD PAGE ==================== -->
+    <main class="main-content" id="dashboardPage">
         <header class="flex justify-between items-center mb-8">
             <div>
                 <h1 class="text-3xl font-bold font-display mb-1">
@@ -412,9 +986,12 @@
                 <p class="text-gray-400" id="userEmailDisplay">Loading...</p>
             </div>
             <div class="flex items-center gap-4">
-                <button class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors relative">
+                <div class="time-badge" id="deviceTime">
+                    <i class="far fa-clock mr-2"></i><span>--:--:--</span>
+                </div>
+                <button class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors relative" onclick="openNotificationPanel()">
                     <i class="fas fa-bell text-gray-400"></i>
-                    <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-gray-900"></span>
+                    <span class="notification-badge hidden" id="desktopNotificationBadge">0</span>
                 </button>
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-semibold" id="userAvatar">
@@ -424,35 +1001,33 @@
             </div>
         </header>
 
-        <!-- Dashboard View -->
-        <div id="dashboardView" class="space-y-6">
-            <!-- Top Row -->
+        <div class="space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Total Balance -->
+                <!-- Balance Card -->
                 <div class="glass-card balance-card p-6 lg:col-span-2">
                     <div class="flex justify-between items-start mb-4">
                         <div>
                             <p class="text-white/70 mb-1">Total Balance</p>
-                            <h2 class="text-4xl font-bold font-display" id="totalBalance">$24,562.00</h2>
+                            <h2 class="text-4xl font-bold font-display" id="totalBalance">$0.00</h2>
                         </div>
                         <div class="flex gap-2">
                             <span class="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-sm flex items-center gap-1">
-                                <i class="fas fa-arrow-up text-xs"></i> +12.5%
+                                <i class="fas fa-arrow-up text-xs"></i> Active
                             </span>
                         </div>
                     </div>
                     <div class="flex gap-4 mt-6">
                         <div class="flex-1">
-                            <p class="text-white/50 text-sm mb-1">Income</p>
-                            <p class="text-xl font-semibold text-green-400">+$8,420.00</p>
+                            <p class="text-white/50 text-sm mb-1">Available</p>
+                            <p class="text-xl font-semibold text-green-400" id="availableBalance">$0.00</p>
                         </div>
                         <div class="flex-1">
-                            <p class="text-white/50 text-sm mb-1">Expenses</p>
-                            <p class="text-xl font-semibold text-red-400">-$3,180.00</p>
+                            <p class="text-white/50 text-sm mb-1">Pending</p>
+                            <p class="text-xl font-semibold text-yellow-400" id="pendingBalance">$0.00</p>
                         </div>
                         <div class="flex-1">
                             <p class="text-white/50 text-sm mb-1">Savings</p>
-                            <p class="text-xl font-semibold text-blue-400">$5,240.00</p>
+                            <p class="text-xl font-semibold text-blue-400" id="savingsDisplay">$0.00</p>
                         </div>
                     </div>
                 </div>
@@ -461,7 +1036,7 @@
                 <div class="glass-card p-6">
                     <h3 class="font-semibold mb-4">Quick Actions</h3>
                     <div class="grid grid-cols-4 gap-4">
-                        <div class="quick-action" onclick="openTransferModal()">
+                        <div class="quick-action" onclick="handleTransferNav()">
                             <i class="fas fa-paper-plane text-indigo-400"></i>
                         </div>
                         <div class="quick-action" onclick="openDepositModal()">
@@ -475,33 +1050,25 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-4 gap-4 mt-3 text-center text-xs text-gray-400">
-                        <span>Send</span>
-                        <span>Add</span>
-                        <span>Scan</span>
-                        <span>More</span>
+                        <span>Send</span><span>Add</span><span>Scan</span><span>More</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Middle Row -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Chart -->
+                <!-- Recent Transactions -->
                 <div class="glass-card p-6 lg:col-span-2">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-semibold">Spending Analytics</h3>
-                        <select class="bg-white/5 border border-white/10 rounded-lg px-3 py-1 text-sm outline-none focus:border-indigo-500 text-white">
-                            <option>This Week</option>
-                            <option>This Month</option>
-                            <option>This Year</option>
-                        </select>
+                        <h3 class="font-semibold">Recent Transactions</h3>
+                        <button class="text-indigo-400 text-sm hover:text-indigo-300" onclick="showTransactionsPage()">View All</button>
                     </div>
-                    <canvas id="spendingChart" height="100"></canvas>
+                    <div id="recentTransactionsContainer"></div>
                 </div>
 
-                <!-- My Cards -->
+                <!-- My Card -->
                 <div class="glass-card p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-semibold">My Cards</h3>
+                        <h3 class="font-semibold">My Card</h3>
                         <button class="text-indigo-400 text-sm hover:text-indigo-300">+ Add New</button>
                     </div>
                     <div class="credit-card mb-4">
@@ -533,498 +1100,1598 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Bottom Row -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Recent Transactions -->
-                <div class="glass-card p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-semibold">Recent Transactions</h3>
-                        <button class="text-indigo-400 text-sm hover:text-indigo-300" onclick="switchTab('transactions')">View All</button>
-                    </div>
-                    <div class="space-y-3" id="recentTransactions">
-                        <!-- Transactions injected here -->
-                    </div>
-                </div>
-
-                <!-- Savings Goals -->
-                <div class="glass-card p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-semibold">Savings Goals</h3>
-                        <button class="text-indigo-400 text-sm hover:text-indigo-300">+ New Goal</button>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="glass-card-hover p-4 rounded-xl cursor-pointer">
-                            <div class="flex justify-between items-center mb-2">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                                        <i class="fas fa-plane text-blue-400"></i>
-                                    </div>
-                                    <div>
-                                        <p class="font-semibold">Vacation Fund</p>
-                                        <p class="text-sm text-gray-400">Target: $5,000</p>
-                                    </div>
-                                </div>
-                                <span class="text-blue-400 font-semibold">75%</span>
-                            </div>
-                            <div class="w-full bg-white/10 rounded-full h-2">
-                                <div class="bg-blue-500 h-2 rounded-full" style="width: 75%"></div>
-                            </div>
-                            <p class="text-sm text-gray-400 mt-2">$3,750 saved</p>
-                        </div>
-
-                        <div class="glass-card-hover p-4 rounded-xl cursor-pointer">
-                            <div class="flex justify-between items-center mb-2">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                                        <i class="fas fa-car text-purple-400"></i>
-                                    </div>
-                                    <div>
-                                        <p class="font-semibold">New Car</p>
-                                        <p class="text-sm text-gray-400">Target: $25,000</p>
-                                    </div>
-                                </div>
-                                <span class="text-purple-400 font-semibold">32%</span>
-                            </div>
-                            <div class="w-full bg-white/10 rounded-full h-2">
-                                <div class="bg-purple-500 h-2 rounded-full" style="width: 32%"></div>
-                            </div>
-                            <p class="text-sm text-gray-400 mt-2">$8,000 saved</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Other Views (Hidden by default) -->
-        <div id="transactionsView" class="hidden space-y-6">
-            <div class="glass-card p-6">
-                <h2 class="text-2xl font-bold font-display mb-6">All Transactions</h2>
-                <div class="space-y-3" id="allTransactions"></div>
-            </div>
-        </div>
-
-        <div id="cardsView" class="hidden space-y-6">
-            <h2 class="text-2xl font-bold font-display">My Cards</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="credit-card">
-                    <div class="flex justify-between items-start mb-8">
-                        <div class="card-chip"></div>
-                        <i class="fab fa-cc-visa text-3xl text-white/80"></i>
-                    </div>
-                    <div class="mb-6">
-                        <p class="text-white/60 text-sm mb-1">Card Number</p>
-                        <p class="text-xl font-mono tracking-wider">**** **** **** 4582</p>
-                    </div>
-                    <div class="flex justify-between">
-                        <div>
-                            <p class="text-white/60 text-xs mb-1">Card Holder</p>
-                            <p class="font-semibold" id="cardHolderName2">USER NAME</p>
-                        </div>
-                        <div>
-                            <p class="text-white/60 text-xs mb-1">Expires</p>
-                            <p class="font-semibold">12/26</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="analyticsView" class="hidden space-y-6">
-            <h2 class="text-2xl font-bold font-display">Analytics</h2>
-            <div class="glass-card p-6">
-                <canvas id="expenseChart"></canvas>
-            </div>
-        </div>
-
-        <div id="transferView" class="hidden space-y-6">
-            <div class="glass-card p-6 max-w-2xl mx-auto">
-                <h2 class="text-2xl font-bold font-display mb-6">Transfer Money</h2>
-                <form onsubmit="handleTransfer(event)">
-                    <div class="mb-4">
-                        <label class="block text-sm text-gray-400 mb-2">Amount</label>
-                        <input type="number" placeholder="0.00" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 outline-none focus:border-indigo-500 text-white" required>
-                    </div>
-                    <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity">Send Money</button>
-                </form>
-            </div>
         </div>
     </main>
 
-    <!-- Transfer Modal -->
-    <div class="modal" id="transferModal">
-        <div class="modal-content">
+    <!-- ==================== TRANSFER PAGE ==================== -->
+    <div class="page" id="transferPage">
+        <div class="mb-6">
+            <button class="btn-secondary mb-4" onclick="showDashboard()">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+            <h1 class="text-3xl font-bold font-display">Transfer Money</h1>
+            <p class="text-gray-400 mt-1">Send money to another bank account</p>
+        </div>
+
+        <div class="pending-alert hidden" id="pendingTransferAlert">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-clock text-yellow-400 text-2xl"></i>
+                <div>
+                    <p class="font-semibold text-yellow-400">Pending Transfer</p>
+                    <p class="text-sm text-gray-400" id="pendingAlertText">You have a transfer awaiting verification</p>
+                </div>
+            </div>
+            <button class="btn-primary" style="width: auto; padding: 0.75rem 1.5rem;" onclick="redirectToVerification()">
+                <i class="fas fa-key mr-2"></i> Complete Now
+            </button>
+        </div>
+
+        <div class="glass-card p-8" style="max-width: 700px; margin: 0 auto;">
+            <div id="selectAccountStep">
+                <h3 class="text-lg font-semibold mb-4">
+                    <i class="fas fa-address-book text-indigo-400 mr-2"></i>Select Recipient
+                </h3>
+                <div class="space-y-3 mb-4" id="savedAccountsList"></div>
+                <div class="add-new-account" onclick="showNewAccountForm()">
+                    <i class="fas fa-plus-circle text-xl"></i>
+                    <span class="font-medium">Add New Account</span>
+                </div>
+            </div>
+
+            <form id="newAccountForm" class="hidden" onsubmit="saveAccount(event)">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-indigo-400">
+                        <i class="fas fa-user-plus mr-2"></i>New Recipient
+                    </h3>
+                    <button type="button" class="text-gray-400 hover:text-white" onclick="showAccountSelection()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label>Recipient Full Name</label>
+                    <input type="text" id="newRecipientName" placeholder="Enter recipient full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Account Number</label>
+                    <input type="text" id="newAccountNumber" placeholder="Enter account number" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Account Type</label>
+                        <select id="newAccountType" required>
+                            <option value="">Select type</option>
+                            <option value="savings">Savings</option>
+                            <option value="checking">Checking / Chequing</option>
+                            <option value="deposit">Deposit</option>
+                            <option value="current">Current</option>
+                            <option value="fixed">Fixed Deposit</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Bank Name</label>
+                        <input type="text" id="newBankName" placeholder="Enter bank name" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Branch</label>
+                        <input type="text" id="newBranch" placeholder="Enter branch" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="optional-label">SWIFT / Transit Code</label>
+                        <input type="text" id="newSwiftCode" placeholder="e.g., CHASUS33">
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="button" class="btn-secondary flex-1" onclick="showAccountSelection()">Cancel</button>
+                    <button type="submit" class="btn-primary flex-1">
+                        <i class="fas fa-save mr-2"></i> Save Account
+                    </button>
+                </div>
+            </form>
+
+            <div id="amountStep" class="hidden">
+                <div class="glass-card p-4 mb-4 bg-indigo-500/5 border-indigo-500/20">
+                    <div class="flex items-center gap-3">
+                        <div class="account-avatar" id="selectedAccountAvatar">AB</div>
+                        <div>
+                            <p class="font-semibold" id="selectedAccountName">-</p>
+                            <p class="text-sm text-gray-400" id="selectedAccountDetails">-</p>
+                        </div>
+                        <button class="ml-auto text-gray-400 hover:text-white" onclick="showAccountSelection()">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Amount to Send</label>
+                    <input type="number" id="sendAmount" placeholder="0.00" min="1" step="0.01" required>
+                    <p class="text-sm text-gray-500 mt-1">Available: <span id="sendAvailableBalance">$0.00</span></p>
+                </div>
+
+                <div class="form-group">
+                    <label class="optional-label">Transfer Purpose / Note</label>
+                    <textarea id="sendPurpose" rows="2" placeholder="What's this transfer for?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Transfer Speed</label>
+                    <select id="sendTransferSpeed">
+                        <option value="instant">Instant Transfer</option>
+                        <option value="standard">Standard (1-2 business days)</option>
+                        <option value="wire">Wire Transfer</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="button" class="btn-secondary flex-1" onclick="showAccountSelection()">Back</button>
+                    <button type="button" class="btn-primary flex-1" onclick="showTransferPreview()">
+                        <i class="fas fa-eye mr-2"></i> Preview Transfer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TRANSACTIONS PAGE ==================== -->
+    <div class="page" id="transactionsPage">
+        <div class="mb-6">
+            <button class="btn-secondary mb-4" onclick="showDashboard()">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+            <h1 class="text-3xl font-bold font-display">Transaction History</h1>
+            <p class="text-gray-400 mt-1">View all your past transactions</p>
+        </div>
+
+        <div class="glass-card p-6">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold">Quick Transfer</h3>
-                <button onclick="closeModal('transferModal')" class="text-gray-400 hover:text-white">
-                    <i class="fas fa-times text-xl"></i>
+                <div class="flex gap-2">
+                    <button class="px-4 py-2 rounded-lg bg-indigo-500/20 text-indigo-400 text-sm font-medium">All</button>
+                    <button class="px-4 py-2 rounded-lg bg-white/5 text-gray-400 text-sm font-medium hover:bg-white/10">Sent</button>
+                    <button class="px-4 py-2 rounded-lg bg-white/5 text-gray-400 text-sm font-medium hover:bg-white/10">Received</button>
+                </div>
+                <button class="text-indigo-400 text-sm hover:text-indigo-300">
+                    <i class="fas fa-download mr-1"></i> Export
                 </button>
             </div>
-            <form onsubmit="handleQuickTransfer(event)">
-                <div class="mb-4">
-                    <label class="block text-sm text-gray-400 mb-2">Recipient</label>
-                    <input type="text" placeholder="Enter email or phone" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 outline-none focus:border-indigo-500 text-white" required>
+            <div id="allTransactionsContainer"></div>
+        </div>
+    </div>
+
+    <!-- ==================== CARDS PAGE ==================== -->
+    <div class="page" id="cardsPage">
+        <div class="mb-6">
+            <button class="btn-secondary mb-4" onclick="showDashboard()">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+            <h1 class="text-3xl font-bold font-display">My Cards</h1>
+            <p class="text-gray-400 mt-1">Manage your payment cards</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="credit-card">
+                <div class="flex justify-between items-start mb-8">
+                    <div class="card-chip"></div>
+                    <i class="fab fa-cc-visa text-3xl text-white/80"></i>
                 </div>
-                <div class="mb-4">
-                    <label class="block text-sm text-gray-400 mb-2">Amount</label>
-                    <input type="number" placeholder="0.00" class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 outline-none focus:border-indigo-500 text-white text-2xl font-bold" required>
+                <div class="mb-6">
+                    <p class="text-white/60 text-sm mb-1">Card Number</p>
+                    <p class="text-xl font-mono tracking-wider">**** **** **** 4582</p>
                 </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity">Send Now</button>
-            </form>
+                <div class="flex justify-between">
+                    <div>
+                        <p class="text-white/60 text-xs mb-1">Card Holder</p>
+                        <p class="font-semibold" id="cardHolderName2">USER NAME</p>
+                    </div>
+                    <div>
+                        <p class="text-white/60 text-xs mb-1">Expires</p>
+                        <p class="font-semibold">12/26</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ANALYTICS PAGE ==================== -->
+    <div class="page" id="analyticsPage">
+        <div class="mb-6">
+            <button class="btn-secondary mb-4" onclick="showDashboard()">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+            <h1 class="text-3xl font-bold font-display">Analytics</h1>
+            <p class="text-gray-400 mt-1">Track your spending patterns</p>
+        </div>
+        <div class="glass-card p-6">
+            <div class="empty-state">
+                <i class="fas fa-chart-line"></i>
+                <p class="text-lg font-medium mb-2">No Data Yet</p>
+                <p class="text-sm">Start making transactions to see your analytics</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TRANSFER PREVIEW MODAL ==================== -->
+    <div class="preview-overlay" id="previewModal">
+        <div class="preview-card">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-full bg-indigo-500/20 flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-eye text-indigo-400 text-2xl"></i>
+                </div>
+                <h2 class="text-xl font-bold font-display">Transfer Preview</h2>
+                <p class="text-gray-400 text-sm">Verify all details before sending</p>
+            </div>
+
+            <div class="space-y-0 mb-6">
+                <div class="preview-row">
+                    <span class="preview-label">Amount</span>
+                    <span class="preview-value text-yellow-400" id="previewAmount">$0.00</span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Recipient</span>
+                    <span class="preview-value" id="previewRecipient">-</span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Account Number</span>
+                    <span class="preview-value" id="previewAccount">-</span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Bank</span>
+                    <span class="preview-value" id="previewBank">-</span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Account Type</span>
+                    <span class="preview-value" id="previewAccountType">-</span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Branch</span>
+                    <span class="preview-value" id="previewBranch">-</span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">SWIFT/Transit</span>
+                    <span class="preview-value" id="previewSwift">-</span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Purpose</span>
+                    <span class="preview-value" id="previewPurpose">-</span>
+                </div>
+                <div class="preview-row">
+                    <span class="preview-label">Transfer Speed</span>
+                    <span class="preview-value" id="previewSpeed">-</span>
+                </div>
+                <div class="preview-row" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 0.5rem; padding-top: 0.75rem;">
+                    <span class="preview-label">Available After</span>
+                    <span class="preview-value text-green-400" id="previewAfterBalance">$0.00</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button class="btn-secondary flex-1" onclick="closePreview()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn-primary flex-1" onclick="confirmTransfer()" id="confirmTransferBtn">
+                    <i class="fas fa-paper-plane mr-2"></i> Confirm & Send
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <div id="toast">
         <div class="glass-card px-6 py-4 flex items-center gap-3">
             <i class="fas fa-check-circle text-green-400 text-xl"></i>
             <span id="toastMessage">Operation successful</span>
         </div>
     </div>
 
-    <script>
-        // ============================================
-        // SUPABASE CONFIGURATION - UPDATE THESE!
-        // ============================================
-        const supabaseUrl = 'https://okgkawqvnygwkosoqbqb.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rZ2thd3F2bnlnd2tvc29xYnFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODA3MjgsImV4cCI6MjA5MTg1NjcyOH0.ctfeDvcXQ9OV8TvpsRKdgf7XLBxTHLouNfGn5_fHky8';
+<script>
+    // ============================================
+    // FORMAT CURRENCY - DEFINED AT TOP LEVEL
+    // ============================================
+    function formatCurrency(val) {
+        if (val === undefined || val === null || isNaN(val)) return '$0.00';
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency', currency: 'USD'
+        }).format(val);
+    }
+
+    // ============================================
+    // SUPABASE CONFIGURATION
+    // ============================================
+    const supabaseUrl = 'https://okgkawqvnygwkosoqbqb.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rZ2thd3F2bnlnd2tvc29xYnFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODA3MjgsImV4cCI6MjA5MTg1NjcyOH0.ctfeDvcXQ9OV8TvpsRKdgf7XLBxTHLouNfGn5_fHky8';
+    
+    let supabaseClient;
+    let currentUser = null;
+    let userProfileData = null;
+    let userTransactions = [];
+    let currentBalance = 0;
+    let pendingBalance = 0;
+    let savedAccounts = [];
+    let selectedAccount = null;
+    let currentPendingTransfer = null;
+    
+    // Notification state
+    let notifications = [];
+    let unreadCount = 0;
+    let currentFilter = 'all';
+    let notificationChannel = null;
+    let isSubscribed = false;
+    
+    try {
+        supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    } catch (e) {
+        console.error('Supabase init error:', e);
+    }
+
+    // ============================================
+    // NEXUS LOADER FUNCTIONS
+    // ============================================
+    function showLoader(text = 'Processing') {
+        const loader = document.getElementById('nexusLoader');
+        const subtitle = document.getElementById('loaderSubtitle');
+        subtitle.innerHTML = text + '<span class="nexus-loader-dots"><span>.</span><span>.</span><span>.</span></span>';
+        loader.classList.add('show');
+        loader.classList.remove('fade-out');
+    }
+
+    function hideLoader() {
+        const loader = document.getElementById('nexusLoader');
+        loader.classList.add('fade-out');
+        setTimeout(() => {
+            loader.classList.remove('show');
+        }, 400);
+    }
+
+    // ============================================
+    // NOTIFICATION SYSTEM
+    // ============================================
+    
+    const NOTIFICATION_TYPES = {
+        ACCOUNT_CREATED: { icon: 'fa-user-plus', color: 'info', label: 'Account' },
+        LOGIN: { icon: 'fa-sign-in-alt', color: 'login', label: 'Security' },
+        LOGOUT: { icon: 'fa-sign-out-alt', color: 'login', label: 'Security' },
+        TRANSFER_INITIATED: { icon: 'fa-paper-plane', color: 'transfer', label: 'Transfer' },
+        TRANSFER_COMPLETED: { icon: 'fa-check-double', color: 'success', label: 'Transfer' },
+        TRANSFER_VERIFIED: { icon: 'fa-shield-alt', color: 'success', label: 'Transfer' },
+        CODE_VERIFIED: { icon: 'fa-key', color: 'success', label: 'Transfer' },
+        BILLING_PAID: { icon: 'fa-credit-card', color: 'success', label: 'Transfer' },
+        PROFILE_UPDATED: { icon: 'fa-user-edit', color: 'info', label: 'Account' },
+        PASSWORD_CHANGED: { icon: 'fa-lock', color: 'security', label: 'Security' },
+        DEPOSIT: { icon: 'fa-arrow-down', color: 'success', label: 'Transfer' },
+        WITHDRAWAL: { icon: 'fa-arrow-up', color: 'warning', label: 'Transfer' },
+        SUSPICIOUS_ACTIVITY: { icon: 'fa-exclamation-triangle', color: 'error', label: 'Security' },
+        DEVICE_LOGIN: { icon: 'fa-mobile-alt', color: 'login', label: 'Security' }
+    };
+
+    async function createNotification(type, title, message, metadata = {}) {
+        if (!currentUser || !supabaseClient) return null;
         
-        let supabaseClient;
-        let currentUser = null;
+        const typeConfig = NOTIFICATION_TYPES[type] || NOTIFICATION_TYPES.LOGIN;
+        
+        const notification = {
+            user_id: currentUser.id,
+            type: type,
+            title: title,
+            message: message,
+            icon: typeConfig.icon,
+            color: typeConfig.color,
+            category: typeConfig.label,
+            metadata: metadata,
+            is_read: false,
+            created_at: new Date().toISOString()
+        };
         
         try {
-            supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+            const { data, error } = await supabaseClient
+                .from('notifications')
+                .insert([notification])
+                .select()
+                .single();
+            
+            if (error) throw error;
+            
+            showNotificationToast(title, message, typeConfig.color);
+            
+            return data;
         } catch (e) {
-            console.error('Supabase init error:', e);
+            console.error('Failed to create notification:', e);
+            saveNotificationLocal(notification);
+            return notification;
         }
+    }
 
-        // ============================================
-        // USER DATA MANAGEMENT
-        // ============================================
+    function saveNotificationLocal(notification) {
+        try {
+            const key = `nexus_notifications_${currentUser.id}`;
+            const existing = JSON.parse(localStorage.getItem(key) || '[]');
+            existing.unshift(notification);
+            localStorage.setItem(key, JSON.stringify(existing.slice(0, 100)));
+        } catch (e) {}
+    }
+
+    async function fetchNotifications() {
+        if (!currentUser || !supabaseClient) {
+            loadNotificationsLocal();
+            return;
+        }
         
-        // Fetch user data from Supabase
-        async function fetchUserData() {
-            if (!supabaseClient) {
-                console.error('Supabase not initialized');
-                // Fallback to localStorage
-                loadUserFromStorage();
+        try {
+            const { data, error } = await supabaseClient
+                .from('notifications')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false })
+                .limit(50);
+            
+            if (error) throw error;
+            
+            notifications = data || [];
+            
+            try {
+                localStorage.setItem(`nexus_notifications_${currentUser.id}`, JSON.stringify(notifications));
+            } catch (e) {}
+            
+            updateUnreadCount();
+            renderNotifications();
+            
+        } catch (e) {
+            console.warn('Supabase notifications fetch failed:', e);
+            loadNotificationsLocal();
+        }
+    }
+
+    function loadNotificationsLocal() {
+        try {
+            const stored = localStorage.getItem(`nexus_notifications_${currentUser?.id}`);
+            if (stored) {
+                notifications = JSON.parse(stored);
+                updateUnreadCount();
+                renderNotifications();
+            }
+        } catch (e) {
+            notifications = [];
+        }
+    }
+
+    function subscribeToNotifications() {
+        if (!supabaseClient || !currentUser) return;
+        if (isSubscribed) return;
+        
+        if (notificationChannel) {
+            supabaseClient.removeChannel(notificationChannel);
+        }
+        
+        notificationChannel = supabaseClient
+            .channel('notifications-' + currentUser.id)
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'notifications',
+                filter: `user_id=eq.${currentUser.id}`
+            }, (payload) => {
+                const newNotif = payload.new;
+                notifications.unshift(newNotif);
+                updateUnreadCount();
+                renderNotifications();
+                showNotificationToast(newNotif.title, newNotif.message, newNotif.color);
+            })
+            .subscribe((status) => {
+                if (status === 'SUBSCRIBED') {
+                    isSubscribed = true;
+                    console.log('Notification realtime subscription active');
+                } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+                    isSubscribed = false;
+                }
+            });
+    }
+
+    function unsubscribeFromNotifications() {
+        if (notificationChannel) {
+            supabaseClient.removeChannel(notificationChannel);
+            notificationChannel = null;
+            isSubscribed = false;
+        }
+    }
+
+    async function markAsRead(notificationId) {
+        const notif = notifications.find(n => n.id === notificationId);
+        if (!notif || notif.is_read) return;
+        
+        notif.is_read = true;
+        updateUnreadCount();
+        renderNotifications();
+        
+        try {
+            await supabaseClient
+                .from('notifications')
+                .update({ is_read: true })
+                .eq('id', notificationId);
+        } catch (e) {
+            console.warn('Failed to mark as read in Supabase:', e);
+        }
+    }
+
+    async function markAllAsRead() {
+        const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id);
+        if (unreadIds.length === 0) return;
+        
+        notifications.forEach(n => n.is_read = true);
+        updateUnreadCount();
+        renderNotifications();
+        
+        try {
+            await supabaseClient
+                .from('notifications')
+                .update({ is_read: true })
+                .in('id', unreadIds);
+        } catch (e) {
+            console.warn('Failed to mark all as read:', e);
+        }
+    }
+
+    async function clearAllNotifications() {
+        if (!confirm('Clear all notification history?')) return;
+        
+        showLoader('Clearing notifications');
+        
+        try {
+            await supabaseClient
+                .from('notifications')
+                .delete()
+                .eq('user_id', currentUser.id);
+        } catch (e) {}
+        
+        notifications = [];
+        updateUnreadCount();
+        renderNotifications();
+        hideLoader();
+    }
+
+    function updateUnreadCount() {
+        unreadCount = notifications.filter(n => !n.is_read).length;
+        
+        const desktopBadge = document.getElementById('desktopNotificationBadge');
+        const mobileBadge = document.getElementById('mobileNotificationBadge');
+        const countText = document.getElementById('notificationCountText');
+        
+        if (unreadCount > 0) {
+            if (desktopBadge) {
+                desktopBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                desktopBadge.classList.remove('hidden');
+            }
+            if (mobileBadge) {
+                mobileBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                mobileBadge.classList.remove('hidden');
+            }
+            if (countText) countText.textContent = `${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}`;
+        } else {
+            if (desktopBadge) desktopBadge.classList.add('hidden');
+            if (mobileBadge) mobileBadge.classList.add('hidden');
+            if (countText) countText.textContent = 'No new notifications';
+        }
+    }
+
+    function renderNotifications() {
+        const container = document.getElementById('notificationList');
+        if (!container) return;
+        
+        let filtered = notifications;
+        
+        if (currentFilter === 'unread') {
+            filtered = notifications.filter(n => !n.is_read);
+        } else if (currentFilter === 'transfers') {
+            filtered = notifications.filter(n => n.category === 'Transfer');
+        } else if (currentFilter === 'security') {
+            filtered = notifications.filter(n => n.category === 'Security');
+        }
+        
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <div class="notification-empty">
+                    <i class="fas fa-bell-slash"></i>
+                    <p class="text-sm">No notifications found</p>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = filtered.map(n => {
+            const timeAgo = getTimeAgo(n.created_at);
+            const iconClass = n.icon || 'fa-bell';
+            const colorClass = n.color || 'info';
+            
+            return `
+                <div class="notification-item ${n.is_read ? '' : 'unread'}" onclick="markAsRead('${n.id}')">
+                    <div class="notification-icon ${colorClass}">
+                        <i class="fas ${iconClass}"></i>
+                    </div>
+                    <div class="notification-content">
+                        <p class="notification-title">${escapeHtml(n.title)}</p>
+                        <p class="notification-message">${escapeHtml(n.message)}</p>
+                        <p class="notification-time">${timeAgo}</p>
+                    </div>
+                    ${!n.is_read ? '<div class="notification-dot"></div>' : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    function filterNotifications(filter) {
+        currentFilter = filter;
+        
+        document.querySelectorAll('.notification-filter-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`filter${filter.charAt(0).toUpperCase() + filter.slice(1)}`)?.classList.add('active');
+        
+        renderNotifications();
+    }
+
+    function openNotificationPanel() {
+        document.getElementById('notificationPanel').classList.add('open');
+        document.getElementById('notificationOverlay').classList.add('show');
+        document.body.style.overflow = 'hidden';
+        renderNotifications();
+    }
+
+    function closeNotificationPanel() {
+        document.getElementById('notificationPanel').classList.remove('open');
+        document.getElementById('notificationOverlay').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    function showNotificationToast(title, message, color = 'info') {
+        const toast = document.getElementById('notificationToast');
+        const iconDiv = document.getElementById('toastIcon');
+        const titleEl = document.getElementById('toastTitle');
+        const msgEl = document.getElementById('toastMessage');
+        
+        iconDiv.className = `notification-toast-icon ${color}`;
+        titleEl.textContent = title;
+        msgEl.textContent = message.length > 60 ? message.substring(0, 60) + '...' : message;
+        
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 4000);
+    }
+
+    function getTimeAgo(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const seconds = Math.floor((now - date) / 1000);
+        
+        if (seconds < 60) return 'Just now';
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes}m ago`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours}h ago`;
+        const days = Math.floor(hours / 24);
+        if (days < 7) return `${days}d ago`;
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // ============================================
+    // DEVICE TIME
+    // ============================================
+    function updateDeviceTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('en-US', {
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+        });
+        const dateString = now.toLocaleDateString('en-US', {
+            weekday: 'short', month: 'short', day: 'numeric'
+        });
+        
+        const timeElement = document.getElementById('deviceTime');
+        if (timeElement) {
+            timeElement.innerHTML = `<i class="far fa-clock mr-2"></i><span>${timeString} | ${dateString}</span>`;
+        }
+    }
+    
+    updateDeviceTime();
+    setInterval(updateDeviceTime, 1000);
+
+    // ============================================
+    // MOBILE SIDEBAR
+    // ============================================
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('show');
+    }
+
+    function closeSidebarMobile() {
+        if (window.innerWidth <= 1024) toggleSidebar();
+    }
+
+    // ============================================
+    // PAGE NAVIGATION
+    // ============================================
+    function hideAllPages() {
+        document.getElementById('dashboardPage').style.display = 'none';
+        document.getElementById('transferPage').classList.remove('active');
+        document.getElementById('transactionsPage').classList.remove('active');
+        document.getElementById('cardsPage').classList.remove('active');
+        document.getElementById('analyticsPage').classList.remove('active');
+        
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.classList.remove('active');
+        });
+    }
+
+    function showDashboard() {
+        hideAllPages();
+        document.getElementById('dashboardPage').style.display = 'block';
+        document.querySelector('.sidebar-item:nth-child(1)').classList.add('active');
+        closeSidebarMobile();
+        window.scrollTo(0, 0);
+        checkPendingTransfer();
+    }
+
+    function showTransferPage() {
+        hideAllPages();
+        document.getElementById('transferPage').classList.add('active');
+        document.querySelector('.sidebar-item:nth-child(2)').classList.add('active');
+        closeSidebarMobile();
+        window.scrollTo(0, 0);
+        
+        showAccountSelection();
+        renderSavedAccounts();
+        checkPendingTransfer();
+    }
+
+    function showTransactionsPage() {
+        hideAllPages();
+        document.getElementById('transactionsPage').classList.add('active');
+        document.querySelector('.sidebar-item:nth-child(3)').classList.add('active');
+        closeSidebarMobile();
+        window.scrollTo(0, 0);
+        renderAllTransactions();
+    }
+
+    function showCardsPage() {
+        hideAllPages();
+        document.getElementById('cardsPage').classList.add('active');
+        document.querySelector('.sidebar-item:nth-child(4)').classList.add('active');
+        closeSidebarMobile();
+        window.scrollTo(0, 0);
+    }
+
+    function showAnalyticsPage() {
+        hideAllPages();
+        document.getElementById('analyticsPage').classList.add('active');
+        document.querySelector('.sidebar-item:nth-child(5)').classList.add('active');
+        closeSidebarMobile();
+        window.scrollTo(0, 0);
+    }
+
+    // ============================================
+    // TRANSFER NAVIGATION
+    // ============================================
+    function handleTransferNav() {
+        if (currentPendingTransfer && !currentPendingTransfer.completed) {
+            redirectToVerification();
+        } else {
+            showTransferPage();
+        }
+    }
+
+    function redirectToVerification() {
+        window.location.href = 'transfer.html';
+    }
+
+    // ============================================
+    // CHECK PENDING TRANSFER
+    // ============================================
+    function checkPendingTransfer() {
+        const hasPending = currentPendingTransfer && !currentPendingTransfer.completed;
+        const alertEl = document.getElementById('pendingTransferAlert');
+        const badge = document.getElementById('transferLockBadge');
+        
+        if (hasPending) {
+            if (alertEl) alertEl.classList.remove('hidden');
+            if (badge) badge.classList.remove('hidden');
+            
+            const alertText = document.getElementById('pendingAlertText');
+            if (alertText && currentPendingTransfer) {
+                alertText.textContent = `${formatCurrency(currentPendingTransfer.amount)} to ${currentPendingTransfer.recipient_name} awaiting verification`;
+            }
+        } else {
+            if (alertEl) alertEl.classList.add('hidden');
+            if (badge) badge.classList.add('hidden');
+        }
+    }
+
+    // ============================================
+    // USER DATA
+    // ============================================
+    async function fetchUserData() {
+        if (!supabaseClient) {
+            loadUserFromStorage();
+            return;
+        }
+        
+        try {
+            const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+            
+            if (sessionError) throw sessionError;
+            
+            if (!session) {
+                window.location.href = 'index.html';
                 return;
             }
             
-            try {
-                // Get current session
-                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
-                
-                if (sessionError) throw sessionError;
-                
-                if (!session) {
-                    console.log('No active session, redirecting to login...');
-                    window.location.href = 'index.html';
-                    return;
-                }
-                
-                currentUser = session.user;
-                console.log('Current user:', currentUser);
-                
-                // Display user data
-                displayUserData(currentUser);
-                
-                // Also save to localStorage for backup
-                saveUserToStorage(currentUser);
-                
-            } catch (error) {
-                console.error('Error fetching user:', error);
-                // Fallback to localStorage
-                loadUserFromStorage();
-            }
+            currentUser = session.user;
+            
+            await fetchUserProfile(currentUser.id);
+            displayUserData(currentUser);
+            saveUserToStorage(currentUser);
+            
+            const deviceInfo = getDeviceInfo();
+            await createNotification(
+                'LOGIN',
+                'New Login Detected',
+                `You logged in from ${deviceInfo.browser} on ${deviceInfo.os} at ${deviceInfo.time}`,
+                { device: deviceInfo }
+            );
+            
+        } catch (error) {
+            console.error('Error fetching user:', error);
+            loadUserFromStorage();
         }
-        
-        // Display user data in UI
-        function displayUserData(user) {
-            // Get user metadata
-            const fullName = user.user_metadata?.full_name || user.user_metadata?.name || 'User';
-            const email = user.email || 'No email';
+    }
+    
+    async function fetchUserProfile(userId) {
+        try {
+            const { data: profile, error } = await supabaseClient
+                .from('user_profiles')
+                .select('*')
+                .eq('id', userId)
+                .single();
             
-            // Update UI elements
-            const nameElement = document.getElementById('userNameDisplay');
-            const emailElement = document.getElementById('userEmailDisplay');
-            const cardHolderElements = document.querySelectorAll('#cardHolderName, #cardHolderName2');
-            const avatarElement = document.getElementById('userAvatar');
-            
-            // Animate the update
-            if (nameElement) {
-                nameElement.style.opacity = '0';
-                setTimeout(() => {
-                    nameElement.textContent = fullName;
-                    nameElement.style.opacity = '1';
-                }, 200);
+            if (error) {
+                console.error('Error fetching profile:', error);
+                return;
             }
             
-            if (emailElement) {
-                emailElement.textContent = email;
-            }
+            userProfileData = profile;
+            currentBalance = profile.balance || 0;
+            pendingBalance = profile.pending_balance || 0;
             
-            // Update card holder names
-            cardHolderElements.forEach(el => {
-                if (el) el.textContent = fullName.toUpperCase();
-            });
+            displayBalance(currentBalance, pendingBalance);
+            loadSavedAccounts();
+            loadPendingTransfer();
+            await fetchTransactions(userId);
+            await fetchNotifications();
+            subscribeToNotifications();
             
-            // Update avatar with initials
-            if (avatarElement) {
-                const initials = fullName
-                    .split(' ')
-                    .map(n => n[0])
-                    .join('')
-                    .toUpperCase()
-                    .slice(0, 2);
-                avatarElement.textContent = initials;
-            }
-            
-            // Update page title
-            document.title = `Nexus Banking - ${fullName}`;
+        } catch (error) {
+            console.error('Error in fetchUserProfile:', error);
         }
-        
-        // Save user to localStorage
-        function saveUserToStorage(user) {
-            try {
-                const fullName = user.user_metadata?.full_name || user.user_metadata?.name || 'User';
-                localStorage.setItem('nexus_user_name', fullName);
-                localStorage.setItem('nexus_user_email', user.email || '');
-                localStorage.setItem('nexus_user_id', user.id || '');
-            } catch (e) {
-                console.warn('Could not save to localStorage:', e);
-            }
-        }
-        
-        // Load user from localStorage (fallback)
-        function loadUserFromStorage() {
-            try {
-                const name = localStorage.getItem('nexus_user_name') || 'User';
-                const email = localStorage.getItem('nexus_user_email') || 'No email';
-                
-                const userData = {
-                    user_metadata: { full_name: name },
-                    email: email
-                };
-                
-                displayUserData(userData);
-            } catch (e) {
-                console.error('Could not load from localStorage:', e);
-            }
-        }
-        
-        // Listen for auth state changes
-        if (supabaseClient) {
-            supabaseClient.auth.onAuthStateChange((event, session) => {
-                console.log('Auth state changed:', event);
-                
-                if (event === 'SIGNED_IN' && session) {
-                    currentUser = session.user;
-                    displayUserData(currentUser);
-                    saveUserToStorage(currentUser);
-                } else if (event === 'SIGNED_OUT') {
-                    window.location.href = 'index.html';
-                } else if (event === 'USER_UPDATED' && session) {
-                    currentUser = session.user;
-                    displayUserData(currentUser);
-                    saveUserToStorage(currentUser);
-                }
-            });
-        }
+    }
 
-        // ============================================
-        // TRANSACTIONS DATA
-        // ============================================
+    function getDeviceInfo() {
+        const ua = navigator.userAgent;
+        let os = 'Unknown OS';
+        let browser = 'Unknown Browser';
         
-        const mockTransactions = [
-            { id: 1, name: 'Apple Store', category: 'Shopping', amount: -1299.00, date: 'Today', icon: 'fa-apple', color: 'bg-gray-700 text-white' },
-            { id: 2, name: 'Salary Deposit', category: 'Income', amount: 8500.00, date: 'Yesterday', icon: 'fa-briefcase', color: 'bg-green-500/20 text-green-400' },
-            { id: 3, name: 'Netflix Subscription', category: 'Entertainment', amount: -15.99, date: 'Yesterday', icon: 'fa-play', color: 'bg-red-500/20 text-red-400' },
-            { id: 4, name: 'Uber Ride', category: 'Transport', amount: -24.50, date: '2 days ago', icon: 'fa-car', color: 'bg-yellow-500/20 text-yellow-400' },
-            { id: 5, name: 'Starbucks', category: 'Food', amount: -8.45, date: '3 days ago', icon: 'fa-coffee', color: 'bg-green-600/20 text-green-400' },
-        ];
+        if (ua.indexOf('Win') !== -1) os = 'Windows';
+        else if (ua.indexOf('Mac') !== -1) os = 'macOS';
+        else if (ua.indexOf('Linux') !== -1) os = 'Linux';
+        else if (ua.indexOf('Android') !== -1) os = 'Android';
+        else if (ua.indexOf('like Mac') !== -1) os = 'iOS';
+        
+        if (ua.indexOf('Chrome') !== -1) browser = 'Chrome';
+        else if (ua.indexOf('Safari') !== -1) browser = 'Safari';
+        else if (ua.indexOf('Firefox') !== -1) browser = 'Firefox';
+        else if (ua.indexOf('Edge') !== -1) browser = 'Edge';
+        
+        return {
+            os,
+            browser,
+            time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+            userAgent: ua
+        };
+    }
 
-        function renderTransactions() {
-            const container = document.getElementById('recentTransactions');
-            const allContainer = document.getElementById('allTransactions');
+    // ============================================
+    // SAVED ACCOUNTS
+    // ============================================
+    async function loadSavedAccounts() {
+        try {
+            const { data, error } = await supabaseClient
+                .from('saved_accounts')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false });
             
-            const html = mockTransactions.map(t => `
-                <div class="transaction-item">
-                    <div class="flex items-center gap-4">
-                        <div class="transaction-icon ${t.color}">
-                            <i class="fas ${t.icon}"></i>
-                        </div>
-                        <div>
-                            <p class="font-semibold">${t.name}</p>
-                            <p class="text-sm text-gray-400">${t.category} • ${t.date}</p>
-                        </div>
-                    </div>
-                    <span class="font-semibold ${t.amount > 0 ? 'text-green-400' : 'text-white'}">
-                        ${t.amount > 0 ? '+' : ''}$${Math.abs(t.amount).toFixed(2)}
-                    </span>
+            if (error) throw error;
+            
+            if (data && data.length > 0) {
+                savedAccounts = data;
+                localStorage.setItem(`nexus_saved_accounts_${currentUser.id}`, JSON.stringify(savedAccounts));
+                return;
+            }
+        } catch (e) {
+            console.warn('Supabase saved_accounts fetch failed:', e);
+        }
+        
+        try {
+            const stored = localStorage.getItem(`nexus_saved_accounts_${currentUser?.id}`);
+            if (stored) savedAccounts = JSON.parse(stored);
+            else savedAccounts = [];
+        } catch (e) {
+            savedAccounts = [];
+        }
+    }
+
+    function saveAccountsToStorage() {
+        try {
+            if (currentUser) {
+                localStorage.setItem(`nexus_saved_accounts_${currentUser.id}`, JSON.stringify(savedAccounts));
+            }
+        } catch (e) {}
+    }
+
+    // ============================================
+    // SAVE NEW ACCOUNT
+    // ============================================
+    async function saveAccount(event) {
+        event.preventDefault();
+        
+        const account = {
+            recipient_name: document.getElementById('newRecipientName').value.trim(),
+            account_number: document.getElementById('newAccountNumber').value.trim(),
+            account_type: document.getElementById('newAccountType').value,
+            bank: document.getElementById('newBankName').value.trim(),
+            branch: document.getElementById('newBranch').value.trim(),
+            swift_code: document.getElementById('newSwiftCode').value.trim() || null,
+        };
+        
+        if (!account.recipient_name || !account.account_number || !account.account_type || !account.bank || !account.branch) {
+            showToast('Please fill in all required fields', 'error');
+            return;
+        }
+        
+        let savedToSupabase = false;
+        try {
+            const { data, error } = await supabaseClient
+                .from('saved_accounts')
+                .insert([{ ...account, user_id: currentUser.id }])
+                .select();
+            
+            if (error) throw error;
+            
+            if (data && data[0]) {
+                savedAccounts.push(data[0]);
+                savedToSupabase = true;
+            }
+        } catch (e) {
+            console.warn('Could not save to Supabase:', e);
+        }
+        
+        if (!savedToSupabase) {
+            const localAccount = {
+                ...account,
+                id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+                user_id: currentUser.id,
+                created_at: new Date().toISOString()
+            };
+            savedAccounts.push(localAccount);
+        }
+        
+        saveAccountsToStorage();
+        document.getElementById('newAccountForm').reset();
+        
+        await createNotification(
+            'PROFILE_UPDATED',
+            'New Recipient Added',
+            `You added ${account.recipient_name} at ${account.bank} to your saved accounts.`,
+            { account_name: account.recipient_name, bank: account.bank }
+        );
+        
+        showToast('Account saved successfully!');
+        selectedAccount = savedAccounts[savedAccounts.length - 1];
+        showAmountStep();
+    }
+
+    function renderSavedAccounts() {
+        const container = document.getElementById('savedAccountsList');
+        if (!container) return;
+        
+        if (savedAccounts.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-6 text-gray-500">
+                    <i class="fas fa-address-book text-3xl mb-2 opacity-30"></i>
+                    <p class="text-sm">No saved accounts yet</p>
                 </div>
-            `).join('');
-            
-            if (container) container.innerHTML = html;
-            if (allContainer) allContainer.innerHTML = html;
+            `;
+            return;
         }
-
-        // ============================================
-        // CHARTS
-        // ============================================
         
-        function initCharts() {
-            const ctx = document.getElementById('spendingChart');
-            if (!ctx) return;
-            
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    datasets: [{
-                        label: 'Spending',
-                        data: [120, 190, 150, 250, 180, 320, 280],
-                        borderColor: '#6366f1',
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { 
-                            grid: { color: 'rgba(255,255,255,0.05)' }, 
-                            ticks: { color: '#666' } 
-                        },
-                        x: { 
-                            grid: { display: false }, 
-                            ticks: { color: '#666' } 
-                        }
-                    }
-                }
-            });
-        }
+        container.innerHTML = savedAccounts.map((acc, index) => {
+            const initials = acc.recipient_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            const maskedNumber = acc.account_number ? '****' + acc.account_number.slice(-4) : '****';
+            return `
+                <div class="saved-account" onclick="selectAccount(${index})">
+                    <div class="account-avatar">${initials}</div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold truncate">${acc.recipient_name}</p>
+                        <p class="text-sm text-gray-400 truncate">${acc.bank} • ${acc.account_type} • ${maskedNumber}</p>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-600"></i>
+                </div>
+            `;
+        }).join('');
+    }
 
-        // ============================================
-        // NAVIGATION & UI
-        // ============================================
+    function selectAccount(index) {
+        selectedAccount = savedAccounts[index];
+        showAmountStep();
+    }
+
+    function showAccountSelection() {
+        document.getElementById('selectAccountStep').classList.remove('hidden');
+        document.getElementById('newAccountForm').classList.add('hidden');
+        document.getElementById('amountStep').classList.add('hidden');
+        selectedAccount = null;
+        renderSavedAccounts();
+    }
+
+    function showNewAccountForm() {
+        document.getElementById('selectAccountStep').classList.add('hidden');
+        document.getElementById('newAccountForm').classList.remove('hidden');
+        document.getElementById('amountStep').classList.add('hidden');
+    }
+
+    function showAmountStep() {
+        if (!selectedAccount) return;
         
-        function switchTab(tab) {
-            // Hide all views
-            ['dashboard', 'transactions', 'cards', 'analytics', 'transfer'].forEach(t => {
-                const el = document.getElementById(t + 'View');
-                if (el) el.classList.add('hidden');
-            });
+        document.getElementById('selectAccountStep').classList.add('hidden');
+        document.getElementById('newAccountForm').classList.add('hidden');
+        document.getElementById('amountStep').classList.remove('hidden');
+        
+        const initials = selectedAccount.recipient_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        document.getElementById('selectedAccountAvatar').textContent = initials;
+        document.getElementById('selectedAccountName').textContent = selectedAccount.recipient_name;
+        
+        const maskedNumber = selectedAccount.account_number ? '****' + selectedAccount.account_number.slice(-4) : '****';
+        document.getElementById('selectedAccountDetails').textContent = 
+            `${selectedAccount.bank} • ${selectedAccount.account_type} • ${maskedNumber}`;
+        
+        document.getElementById('sendAvailableBalance').textContent = formatCurrency(currentBalance);
+    }
+
+    // ============================================
+    // TRANSFER PREVIEW
+    // ============================================
+    function showTransferPreview() {
+        const amount = parseFloat(document.getElementById('sendAmount').value);
+        
+        if (!amount || amount <= 0) {
+            showToast('Please enter a valid amount', 'error');
+            return;
+        }
+        
+        if (amount > currentBalance) {
+            showToast('Insufficient balance', 'error');
+            return;
+        }
+        
+        document.getElementById('previewAmount').textContent = formatCurrency(amount);
+        document.getElementById('previewRecipient').textContent = selectedAccount.recipient_name;
+        document.getElementById('previewAccount').textContent = selectedAccount.account_number;
+        document.getElementById('previewBank').textContent = selectedAccount.bank;
+        document.getElementById('previewAccountType').textContent = selectedAccount.account_type.charAt(0).toUpperCase() + selectedAccount.account_type.slice(1);
+        document.getElementById('previewBranch').textContent = selectedAccount.branch;
+        document.getElementById('previewSwift').textContent = selectedAccount.swift_code || 'N/A';
+        document.getElementById('previewPurpose').textContent = document.getElementById('sendPurpose').value || 'N/A';
+        document.getElementById('previewSpeed').textContent = document.getElementById('sendTransferSpeed').value;
+        document.getElementById('previewAfterBalance').textContent = formatCurrency(currentBalance - amount);
+        
+        document.getElementById('previewModal').classList.add('show');
+    }
+
+    function closePreview() {
+        document.getElementById('previewModal').classList.remove('show');
+    }
+
+    // ============================================
+    // CONFIRM TRANSFER (FIXED)
+    // ============================================
+    // ============================================
+    // CONFIRM TRANSFER (FIXED WITH BETTER ERROR HANDLING)
+    // ============================================
+    async function confirmTransfer() {
+        const btn = document.getElementById('confirmTransferBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+        
+        showLoader('Processing your transfer');
+        
+        try {
+            const amount = parseFloat(document.getElementById('sendAmount').value);
+            const purpose = document.getElementById('sendPurpose').value.trim();
+            const transferSpeed = document.getElementById('sendTransferSpeed').value;
+            const now = new Date();
+            const transactionId = 'TXN-' + Date.now().toString(36).toUpperCase();
             
-            // Show selected view
-            const selectedEl = document.getElementById(tab + 'View');
-            if (selectedEl) selectedEl.classList.remove('hidden');
+            // Step 1: Update balance in Supabase
+            const newBalance = currentBalance - amount;
+            const newPendingBalance = pendingBalance + amount;
             
-            // Update sidebar
-            document.querySelectorAll('.sidebar-item').forEach(item => {
-                item.classList.remove('active');
-            });
+            const { error: balanceError } = await supabaseClient
+                .from('user_profiles')
+                .update({ 
+                    balance: newBalance,
+                    pending_balance: newPendingBalance
+                })
+                .eq('id', currentUser.id);
             
-            if (event && event.target) {
-                event.target.closest('.sidebar-item').classList.add('active');
-            }
-        }
-
-        function openTransferModal() {
-            const modal = document.getElementById('transferModal');
-            if (modal) modal.classList.add('show');
-        }
-
-        function closeModal(id) {
-            const modal = document.getElementById(id);
-            if (modal) modal.classList.remove('show');
-        }
-
-        function openDepositModal() {
-            showToast('Deposit feature coming soon!');
-        }
-
-        function openPayModal() {
-            showToast('QR Pay feature coming soon!');
-        }
-
-        function openMoreModal() {
-            showToast('More options coming soon!');
-        }
-
-        function showSettings() {
-            showToast('Settings page coming soon!');
-        }
-
-        function handleTransfer(e) {
-            e.preventDefault();
-            showToast('Transfer initiated successfully!');
-        }
-
-        function handleQuickTransfer(e) {
-            e.preventDefault();
-            closeModal('transferModal');
-            showToast('Money sent successfully!');
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
+            if (balanceError) throw balanceError;
             
-            if (toastMessage) toastMessage.textContent = message;
-            if (toast) {
-                toast.classList.remove('translate-y-20', 'opacity-0');
-                setTimeout(() => {
-                    toast.classList.add('translate-y-20', 'opacity-0');
-                }, 3000);
-            }
-        }
-
-        async function handleLogout() {
-            if (!confirm('Are you sure you want to logout?')) return;
+            // Step 2: Build the transaction object
+            const transaction = {
+                id: transactionId,
+                user_id: currentUser.id,
+                recipient_name: selectedAccount.recipient_name,
+                account_number: selectedAccount.account_number,
+                account_type: selectedAccount.account_type,
+                bank: selectedAccount.bank,
+                branch: selectedAccount.branch,
+                swift_code: selectedAccount.swift_code || null,
+                amount: amount,
+                purpose: purpose || null,
+                transfer_speed: transferSpeed,
+                type: 'sent',
+                status: 'pending',
+                date: now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+                created_at: now.toISOString()
+            };
             
-            // Sign out from Supabase
-            if (supabaseClient) {
-                await supabaseClient.auth.signOut();
-            }
+            // Step 3: Save to localStorage as source of truth for pending
+            currentPendingTransfer = {
+                ...transaction,
+                completed: false,
+                codesVerified: [false, false, false, false]
+            };
+            savePendingTransfer();
             
-            // Clear local storage
+            // Step 4: Update local state
+            currentBalance = newBalance;
+            pendingBalance = newPendingBalance;
+            
+            // Step 5: Add to local transactions array and save
+            userTransactions.unshift({...transaction});
+            saveTransactionsToLocalStorage();
+            
+            // Step 6: Try Supabase insert WITH DETAILED ERROR LOGGING
+            console.log('Attempting to insert transaction:', transaction);
+            
             try {
-                localStorage.removeItem('nexus_has_account');
-                localStorage.removeItem('nexus_user_email');
-                localStorage.removeItem('nexus_user_name');
-                localStorage.removeItem('nexus_user_id');
-            } catch (e) {
-                console.warn('Could not clear localStorage:', e);
+                const { data: insertData, error: txError } = await supabaseClient
+                    .from('transactions')
+                    .insert([transaction])
+                    .select();
+                
+                if (txError) {
+                    console.error('=== TRANSACTION INSERT ERROR ===');
+                    console.error('Error code:', txError.code);
+                    console.error('Error message:', txError.message);
+                    console.error('Error details:', txError.details);
+                    console.error('Hint:', txError.hint);
+                    console.error('===================================');
+                    
+                    // Show the actual error to user
+                    showToast('Transfer saved locally. Sync issue: ' + txError.message, 'error');
+                } else {
+                    console.log('Transaction inserted successfully:', insertData);
+                }
+            } catch (txErr) {
+                console.error('=== TRANSACTION INSERT EXCEPTION ===');
+                console.error('Exception:', txErr);
+                console.error('====================================');
             }
             
-            // Redirect to auth page
-            window.location.href = 'index.html';
-        }
-
-        // Close modal on outside click
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.classList.remove('show');
-            }
-        }
-
-        // ============================================
-        // INITIALIZATION
-        // ============================================
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('Dashboard loading...');
-            
-            // Fetch user data first
-            fetchUserData();
-            
-            // Render other components
+            // Step 7: Update UI immediately
+            displayBalance(newBalance, newPendingBalance);
             renderTransactions();
-            initCharts();
+            checkPendingTransfer();
+            
+            // Step 8: Create notification
+            await createNotification(
+                'TRANSFER_INITIATED',
+                'Transfer Initiated',
+                `You sent ${formatCurrency(amount)} to ${selectedAccount.recipient_name} at ${selectedAccount.bank}. Awaiting verification.`,
+                { 
+                    amount: amount,
+                    recipient: selectedAccount.recipient_name,
+                    bank: selectedAccount.bank,
+                    transaction_id: transactionId
+                }
+            );
+            
+            // Step 9: Close preview and redirect
+            closePreview();
+            showLoader('Redirecting to verification');
+            
+            setTimeout(() => {
+                window.location.href = 'transfer.html';
+            }, 1500);
+            
+        } catch (error) {
+            console.error('Transfer error:', error);
+            hideLoader();
+            showToast('Transfer failed: ' + error.message, 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Confirm & Send';
+        }
+    }
+    // ============================================
+    // PENDING TRANSFER
+    // ============================================
+    function loadPendingTransfer() {
+        try {
+            const stored = localStorage.getItem(`nexus_pending_transfer_${currentUser?.id}`);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (!parsed.completed) {
+                    currentPendingTransfer = parsed;
+                }
+            }
+        } catch (e) {
+            currentPendingTransfer = null;
+        }
+    }
+
+    function savePendingTransfer() {
+        try {
+            if (currentUser && currentPendingTransfer) {
+                localStorage.setItem(`nexus_pending_transfer_${currentUser.id}`, JSON.stringify(currentPendingTransfer));
+            }
+        } catch (e) {}
+    }
+
+    // ============================================
+    // DISPLAY
+    // ============================================
+    function displayBalance(balance, pending = 0) {
+        currentBalance = balance || 0;
+        pendingBalance = pending || 0;
+        
+        const total = currentBalance + pendingBalance;
+        
+        const balanceElement = document.getElementById('totalBalance');
+        if (balanceElement) {
+            balanceElement.style.opacity = '0';
+            setTimeout(() => {
+                balanceElement.textContent = formatCurrency(total);
+                balanceElement.style.opacity = '1';
+            }, 200);
+        }
+        
+        document.getElementById('availableBalance').textContent = formatCurrency(currentBalance);
+        document.getElementById('pendingBalance').textContent = formatCurrency(pendingBalance);
+        document.getElementById('savingsDisplay').textContent = formatCurrency(currentBalance);
+    }
+    
+    function displayUserData(user) {
+        const fullName = user.user_metadata?.full_name || user.user_metadata?.name || 'User';
+        const email = user.email || 'No email';
+        
+        const nameElement = document.getElementById('userNameDisplay');
+        const emailElement = document.getElementById('userEmailDisplay');
+        
+        if (nameElement) {
+            nameElement.style.opacity = '0';
+            setTimeout(() => {
+                nameElement.textContent = fullName;
+                nameElement.style.opacity = '1';
+            }, 200);
+        }
+        
+        if (emailElement) emailElement.textContent = email;
+        
+        document.querySelectorAll('#cardHolderName, #cardHolderName2').forEach(el => {
+            if (el) el.textContent = fullName.toUpperCase();
         });
-    </script>
+        
+        const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        
+        const avatarElement = document.getElementById('userAvatar');
+        const mobileAvatarElement = document.getElementById('mobileUserAvatar');
+        if (avatarElement) avatarElement.textContent = initials;
+        if (mobileAvatarElement) mobileAvatarElement.textContent = initials;
+        
+        document.title = `Nexus Banking - ${fullName}`;
+    }
+    
+    function saveUserToStorage(user) {
+        try {
+            const fullName = user.user_metadata?.full_name || user.user_metadata?.name || 'User';
+            localStorage.setItem('nexus_user_name', fullName);
+            localStorage.setItem('nexus_user_email', user.email || '');
+            localStorage.setItem('nexus_user_id', user.id || '');
+        } catch (e) {}
+    }
+    
+    function loadUserFromStorage() {
+        try {
+            const name = localStorage.getItem('nexus_user_name') || 'User';
+            const email = localStorage.getItem('nexus_user_email') || 'No email';
+            displayUserData({ user_metadata: { full_name: name }, email: email });
+        } catch (e) {}
+    }
+    
+    if (supabaseClient) {
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                currentUser = session.user;
+                displayUserData(currentUser);
+                fetchUserProfile(currentUser.id);
+                saveUserToStorage(currentUser);
+            } else if (event === 'SIGNED_OUT') {
+                window.location.href = 'index.html';
+            }
+        });
+    }
+
+    // ============================================
+    // TRANSACTIONS
+    // ============================================
+    async function fetchTransactions(userId) {
+        try {
+            const { data: transactions, error } = await supabaseClient
+                .from('transactions')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.warn('fetchTransactions error:', error);
+                loadTransactionsFromLocalStorage();
+                return;
+            }
+            
+            userTransactions = transactions || [];
+            renderTransactions();
+            
+        } catch (error) {
+            console.warn('fetchTransactions catch:', error);
+            loadTransactionsFromLocalStorage();
+        }
+    }
+
+    function loadTransactionsFromLocalStorage() {
+        try {
+            const stored = localStorage.getItem(`nexus_transactions_${currentUser?.id || 'guest'}`);
+            if (stored) userTransactions = JSON.parse(stored);
+        } catch (e) {
+            userTransactions = [];
+        }
+        renderTransactions();
+    }
+
+    function saveTransactionsToLocalStorage() {
+        try {
+            if (currentUser) {
+                localStorage.setItem(`nexus_transactions_${currentUser.id}`, JSON.stringify(userTransactions));
+            }
+        } catch (e) {}
+    }
+
+    function renderTransactions() {
+        const recentContainer = document.getElementById('recentTransactionsContainer');
+        
+        if (userTransactions.length === 0) {
+            const emptyHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-receipt"></i>
+                    <p class="text-lg font-medium mb-2">No Transactions Yet</p>
+                    <p class="text-sm mb-4">Your transaction history will appear here once you make your first transfer</p>
+                    <button class="btn-secondary" onclick="handleTransferNav()">
+                        <i class="fas fa-paper-plane mr-2"></i> Make Your First Transfer
+                    </button>
+                </div>
+            `;
+            if (recentContainer) recentContainer.innerHTML = emptyHTML;
+        } else {
+            const recent = userTransactions.slice(0, 5);
+            const html = recent.map(t => createTransactionHTML(t)).join('');
+            if (recentContainer) recentContainer.innerHTML = html;
+        }
+    }
+
+    function renderAllTransactions() {
+        const container = document.getElementById('allTransactionsContainer');
+        
+        if (userTransactions.length === 0) {
+            const emptyHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-receipt"></i>
+                    <p class="text-lg font-medium mb-2">No Transaction History</p>
+                    <p class="text-sm mb-4">You haven't made any transactions yet.</p>
+                    <button class="btn-secondary" onclick="handleTransferNav()">
+                        <i class="fas fa-paper-plane mr-2"></i> Send Money
+                    </button>
+                </div>
+            `;
+            if (container) container.innerHTML = emptyHTML;
+        } else {
+            const html = userTransactions.map(t => createTransactionHTML(t)).join('');
+            if (container) container.innerHTML = html;
+        }
+    }
+
+    function createTransactionHTML(t) {
+        const isIncoming = t.type === 'received';
+        const isPending = t.status === 'pending';
+        const amountClass = isPending ? 'text-yellow-400' : (isIncoming ? 'text-green-400' : 'text-white');
+        const sign = isIncoming ? '+' : '-';
+        const icon = isPending ? 'fa-clock' : (isIncoming ? 'fa-arrow-down' : 'fa-arrow-up');
+        const color = isPending ? 'bg-yellow-500/20 text-yellow-400' : (isIncoming ? 'bg-green-500/20 text-green-400' : 'bg-indigo-500/20 text-indigo-400');
+        const statusLabel = isPending ? ' [PENDING]' : '';
+        
+        return `
+            <div class="transaction-item">
+                <div class="flex items-center gap-4 min-w-0">
+                    <div class="transaction-icon ${color}">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="font-semibold truncate">${t.recipient_name || 'Unknown'}${statusLabel}</p>
+                        <p class="text-sm text-gray-400 truncate">${t.bank || 'Transfer'} • ${t.date || new Date(t.created_at).toLocaleDateString()}</p>
+                    </div>
+                </div>
+                <span class="font-semibold ${amountClass} flex-shrink-0 ml-2">
+                    ${sign}$${Math.abs(parseFloat(t.amount)).toFixed(2)}
+                </span>
+            </div>
+        `;
+    }
+
+    // ============================================
+    // UI HELPERS
+    // ============================================
+    function openDepositModal() {
+        showToast('Deposit feature coming soon!');
+    }
+
+    function openPayModal() {
+        showToast('QR Pay feature coming soon!');
+    }
+
+    function openMoreModal() {
+        showToast('More options coming soon!');
+    }
+
+    function showSettings() {
+        showToast('Settings page coming soon!');
+    }
+
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const icon = toast.querySelector('i');
+        
+        if (type === 'error') {
+            icon.className = 'fas fa-exclamation-circle text-red-400 text-xl';
+        } else {
+            icon.className = 'fas fa-check-circle text-green-400 text-xl';
+        }
+        
+        if (toastMessage) toastMessage.textContent = message;
+        if (toast) {
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    }
+
+    async function handleLogout() {
+        if (!confirm('Are you sure you want to logout?')) return;
+        
+        showLoader('Logging out');
+        
+        await createNotification(
+            'LOGOUT',
+            'Session Ended',
+            'You have been logged out of your account.',
+            { timestamp: new Date().toISOString() }
+        );
+        
+        unsubscribeFromNotifications();
+        
+        if (supabaseClient) {
+            await supabaseClient.auth.signOut();
+        }
+        
+        try {
+            localStorage.removeItem('nexus_has_account');
+            localStorage.removeItem('nexus_user_email');
+            localStorage.removeItem('nexus_user_name');
+            localStorage.removeItem('nexus_user_id');
+        } catch (e) {}
+        
+        window.location.href = 'index.html';
+    }
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 1024) {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('show');
+        }
+    });
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('Dashboard loading...');
+        showLoader('Loading your dashboard');
+        updateDeviceTime();
+        fetchUserData().then(() => {
+            hideLoader();
+        }).catch(() => {
+            hideLoader();
+        });
+    });
+
+    // Add this function for testing
+async function testTransactionInsert() {
+    if (!currentUser) {
+        console.error('No current user');
+        return;
+    }
+    
+    const testTx = {
+        id: 'TEST-' + Date.now(),
+        user_id: currentUser.id,
+        recipient_name: 'Test Recipient',
+        account_number: '1234567890',
+        account_type: 'savings',
+        bank: 'Test Bank',
+        branch: 'Main Branch',
+        swift_code: null,
+        amount: 100.00,
+        purpose: 'Test',
+        transfer_speed: 'standard',
+        type: 'sent',
+        status: 'pending',
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString(),
+        created_at: new Date().toISOString()
+    };
+    
+    console.log('Testing insert with:', testTx);
+    
+    const { data, error } = await supabaseClient
+        .from('transactions')
+        .insert([testTx])
+        .select();
+    
+    if (error) {
+        console.error('TEST INSERT FAILED:', error);
+    } else {
+        console.log('TEST INSERT SUCCESS:', data);
+    }
+}
+
+// Call from console: testTransactionInsert()
+</script>
 </body>
 </html>

