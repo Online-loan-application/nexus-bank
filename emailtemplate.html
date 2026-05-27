@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Nexus Banking</title>
+    <style>
+        @keyframes r1{from{transform:rotateY(0)rotateX(10deg)}to{transform:rotateY(360deg)rotateX(10deg)}}
+        @keyframes r2{from{transform:rotateY(0)rotateX(10deg)}to{transform:rotateY(-360deg)rotateX(10deg)}}
+        @keyframes r3{from{transform:rotateY(0)rotateX(10deg)}to{transform:rotateY(360deg)rotateX(10deg)}}
+        @keyframes p{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+        @keyframes f{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        @keyframes g{0%,100%{box-shadow:0 0 20px rgba(99,102,241,.3)}50%{box-shadow:0 0 40px rgba(99,102,241,.6)}}
+        @keyframes i{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .a1{animation:i .5s .1s both}.a2{animation:i .5s .2s both}.a3{animation:i .5s .3s both}
+        .a4{animation:i .5s .4s both}.af{animation:f 4s ease-in-out infinite}
+        .ag{animation:g 3s ease-in-out infinite}
+        @media(max-width:600px){.em{width:100%!important}.mp{padding:20px 16px!important}.ms{display:block!important;width:100%!important}}
+    </style>
+</head>
+<body style="margin:0;padding:0;background:#0a0a0f;font-family:Segoe UI,sans-serif">
+<table width="100%" style="background:linear-gradient(135deg,#0a0a0f,#1a1a2e,#16213e)">
+<tr><td style="padding:30px 0">
+<table width="600" class="em" style="margin:0 auto;max-width:600px">
+
+<!-- HEADER -->
+<tr><td class="mp" style="padding:0 15px">
+<table width="100%" class="ag" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;box-shadow:0 25px 50px -12px rgba(0,0,0,.5)">
+<tr><td style="padding:35px 25px;text-align:center">
+
+<!-- LOGO - Exact match to index.html -->
+<div class="af" style="position:relative;width:120px;height:120px;margin:0 auto 20px">
+<div style="position:absolute;width:100%;height:100%;border:3px solid transparent;border-top-color:#6366f1;border-right-color:#6366f1;border-radius:50%;animation:r1 4s linear infinite;box-shadow:0 0 20px rgba(99,102,241,.3)"></div>
+<div style="position:absolute;width:75%;height:75%;top:12.5%;left:12.5%;border:3px solid transparent;border-bottom-color:#8b5cf6;border-left-color:#8b5cf6;border-radius:50%;animation:r2 3s linear infinite"></div>
+<div style="position:absolute;width:50%;height:50%;top:25%;left:25%;border:3px solid transparent;border-top-color:#3b82f6;border-bottom-color:#3b82f6;border-radius:50%;animation:r3 2s linear infinite"></div>
+<div style="position:absolute;width:35%;height:35%;top:32.5%;left:32.5%;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;animation:p 2s ease-in-out infinite;box-shadow:0 0 30px rgba(99,102,241,.6),0 0 60px rgba(99,102,241,.3),inset 0 0 20px rgba(255,255,255,.2)">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+</div>
+</div>
+
+<h1 class="a1" style="font-size:30px;color:#fff;margin:0 0 8px;font-family:Space Grotesk,sans-serif;letter-spacing:-.02em">Welcome to <span style="background:linear-gradient(90deg,#6366f1,#a5b4fc,#6366f1);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:i 3s linear infinite">NEXUS</span></h1>
+<p class="a2" style="font-size:15px;color:rgba(255,255,255,.6);margin:0">Secure. Smart. Seamless.</p>
+<div class="a3" style="width:50px;height:3px;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:2px;margin:18px auto 0;box-shadow:0 0 10px rgba(99,102,241,.5)"></div>
+</td></tr>
+</table>
+</td></tr>
+
+<tr><td style="height:15px"></td></tr>
+
+<!-- WELCOME -->
+<tr><td class="mp" style="padding:0 15px">
+<table width="100%" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px">
+<tr><td class="mp" style="padding:28px 24px">
+<h2 class="a2" style="font-size:20px;color:#fff;margin:0 0 12px">Hi {{to_name}},</h2>
+<p class="a3" style="font-size:14px;line-height:1.7;color:rgba(255,255,255,.7);margin:0 0 20px">Your account has been successfully created at <strong style="color:#a5b4fc">{{bank_name}}</strong>.</p>
+
+<div class="a3" style="background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.15);border-radius:12px;padding:18px;margin-bottom:20px">
+<p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin:0 0 6px">Account Email</p>
+<p style="font-size:14px;color:#fff;margin:0 0 14px;font-family:monospace">{{to_email}}</p>
+<div style="border-top:1px solid rgba(255,255,255,.05);padding-top:14px">
+<p style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin:0 0 6px">Registered On</p>
+<p style="font-size:14px;color:#fff;margin:0">{{signup_date}}</p>
+</div>
+</div>
+
+<div class="a4" style="text-align:center;margin-bottom:16px">
+<a href="{{login_url}}" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;text-decoration:none;border-radius:14px;font-weight:600;font-size:14px;box-shadow:0 8px 25px rgba(99,102,241,.4)">Access Your Account</a>
+</div>
+<p class="a4" style="font-size:12px;color:rgba(255,255,255,.35);text-align:center;margin:0">Or visit: <span style="color:#a5b4fc">{{login_url}}</span></p>
+</td></tr>
+</table>
+</td></tr>
+
+<tr><td style="height:15px"></td></tr>
+
+<!-- FEATURES -->
+<tr><td class="mp" style="padding:0 15px">
+<h3 class="a3" style="font-size:16px;color:#fff;margin:0 0 15px;text-align:center">What You Get</h3>
+<table width="100%">
+<tr>
+<td class="ms" width="32%" style="padding-right:6px" valign="top">
+<table width="100%" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;height:100%">
+<tr><td style="padding:20px 15px;text-align:center">
+<div style="width:44px;height:44px;margin:0 auto 10px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.2);border-radius:10px">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" style="display:block;margin:12px auto"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+</div>
+<h4 style="font-size:13px;color:#fff;margin:0 0 6px">256-Bit Security</h4>
+<p style="font-size:11px;color:rgba(255,255,255,.5);margin:0;line-height:1.5">Bank-grade encryption</p>
+</td></tr>
+</table>
+</td>
+<td class="ms" width="32%" style="padding:0 3px" valign="top">
+<table width="100%" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;height:100%">
+<tr><td style="padding:20px 15px;text-align:center">
+<div style="width:44px;height:44px;margin:0 auto 10px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2);border-radius:10px">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" style="display:block;margin:12px auto"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+</div>
+<h4 style="font-size:13px;color:#fff;margin:0 0 6px">Smart Analytics</h4>
+<p style="font-size:11px;color:rgba(255,255,255,.5);margin:0;line-height:1.5">AI-powered insights</p>
+</td></tr>
+</table>
+</td>
+<td class="ms" width="32%" style="padding-left:6px" valign="top">
+<table width="100%" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;height:100%">
+<tr><td style="padding:20px 15px;text-align:center">
+<div style="width:44px;height:44px;margin:0 auto 10px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.2);border-radius:10px">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" style="display:block;margin:12px auto"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+</div>
+<h4 style="font-size:13px;color:#fff;margin:0 0 6px">24/7 Support</h4>
+<p style="font-size:11px;color:rgba(255,255,255,.5);margin:0;line-height:1.5">Always here to help</p>
+</td></tr>
+</table>
+</td>
+</tr>
+</table>
+</td></tr>
+
+<tr><td style="height:15px"></td></tr>
+
+<!-- SECURITY -->
+<tr><td class="mp" style="padding:0 15px">
+<table width="100%" style="background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.12);border-radius:12px">
+<tr><td class="mp" style="padding:18px 20px">
+<table width="100%">
+<tr>
+<td width="36" style="vertical-align:top">
+<div style="width:32px;height:32px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.2);border-radius:50%;text-align:center;line-height:32px;box-shadow:0 0 12px rgba(34,197,94,.2)">
+<span style="color:#22c55e;font-size:16px">&#10003;</span>
+</div>
+</td>
+<td style="vertical-align:top;padding-left:12px">
+<h4 style="font-size:14px;color:#86efac;margin:0 0 4px">Your Account is Secure</h4>
+<p style="font-size:12px;color:rgba(255,255,255,.5);margin:0;line-height:1.5">AES-256 encryption. Passwords never stored in plain text.</p>
+</td>
+</tr>
+</table>
+</td></tr>
+</table>
+</td></tr>
+
+<tr><td style="height:20px"></td></tr>
+
+<!-- FOOTER -->
+<tr><td class="mp" style="padding:0 15px">
+<table width="100%" style="text-align:center">
+<tr><td style="padding-bottom:12px">
+<div style="width:40px;height:40px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:10px;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 0 15px rgba(99,102,241,.4)">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="display:block"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+</div>
+</td></tr>
+<tr><td style="padding-bottom:6px">
+<span style="font-size:18px;font-weight:700;color:#fff;letter-spacing:3px">NEXUS</span>
+</td></tr>
+<tr><td style="padding-bottom:15px">
+<p style="font-size:12px;color:rgba(255,255,255,.4);margin:0">Secure. Smart. Seamless.</p>
+</td></tr>
+<tr><td style="padding-bottom:15px">
+<div style="width:30px;height:2px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.5),transparent);margin:0 auto"></div>
+</td></tr>
+<tr><td style="padding-bottom:12px">
+<p style="font-size:11px;color:rgba(255,255,255,.35);margin:0;line-height:1.6">Need help? <a href="mailto:{{support_email}}" style="color:#a5b4fc;text-decoration:none">{{support_email}}</a></p>
+</td></tr>
+<tr><td style="padding-bottom:10px">
+<p style="font-size:10px;color:rgba(255,255,255,.25);margin:0">You're receiving this because you created an account on {{bank_name}}.</p>
+</td></tr>
+<tr><td>
+<p style="font-size:10px;color:rgba(255,255,255,.2);margin:0">&copy; 2026 {{bank_name}}. All rights reserved.</p>
+</td></tr>
+</table>
+</td></tr>
+
+<tr><td style="height:30px"></td></tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>

@@ -9,120 +9,120 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #0a0a0f; overflow-x: hidden; min-height: 100vh; }
-        .font-display { font-family: 'Space Grotesk', sans-serif; }
-        .gradient-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%); z-index: -3; }
-        .floating-shapes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden; pointer-events: none; }
-        .shape { position: absolute; opacity: 0.15; animation: float3d 15s infinite ease-in-out; }
-        .shape-1 { width: 300px; height: 300px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; top: 10%; left: 10%; animation-delay: 0s; filter: blur(1px); }
-        .shape-2 { width: 200px; height: 200px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; top: 60%; right: 10%; animation-delay: -5s; filter: blur(2px); }
-        .shape-3 { width: 150px; height: 150px; background: linear-gradient(135deg, #3b82f6, #6366f1); border-radius: 50%; bottom: 20%; left: 20%; animation-delay: -10s; filter: blur(1px); }
-        .shape-4 { width: 100px; height: 100px; border: 2px solid rgba(99, 102, 241, 0.3); top: 30%; right: 30%; animation-delay: -7s; transform: rotate(45deg); }
-        @keyframes float3d { 0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); } 25% { transform: translate(30px, -30px) rotate(90deg) scale(1.1); } 50% { transform: translate(-20px, 20px) rotate(180deg) scale(0.9); } 75% { transform: translate(20px, 30px) rotate(270deg) scale(1.05); } }
-        .orb { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.4; animation: orbFloat 20s infinite ease-in-out; }
-        .orb-1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(99, 102, 241, 0.6) 0%, transparent 70%); top: -10%; left: -10%; animation-delay: 0s; }
-        .orb-2 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(139, 92, 246, 0.6) 0%, transparent 70%); bottom: -10%; right: -10%; animation-delay: -5s; }
-        @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(50px, -50px) scale(1.2); } 66% { transform: translate(-30px, 30px) scale(0.8); } }
-        .grid-lines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px); background-size: 60px 60px; z-index: -1; opacity: 0.3; animation: gridMove 25s linear infinite; }
-        @keyframes gridMove { 0% { transform: perspective(500px) rotateX(60deg) translateY(0); } 100% { transform: perspective(500px) rotateX(60deg) translateY(60px); } }
-        .glass-card-3d { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 0 100px rgba(99, 102, 241, 0.1) inset; transform-style: preserve-3d; perspective: 1000px; transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .glass-card-3d:hover { transform: translateY(-5px) rotateX(2deg); box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 0 120px rgba(99, 102, 241, 0.15) inset; }
-        .inner-glow { position: relative; overflow: hidden; }
-        .inner-glow::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%); opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
-        .inner-glow:hover::before { opacity: 1; }
-        .splash-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; background: #0a0a0f; transition: opacity 0.8s ease, transform 0.8s ease, visibility 0.8s; }
-        .splash-container.hidden { opacity: 0; transform: scale(1.1); visibility: hidden; pointer-events: none; }
-        .splash-container.loader-mode { background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: opacity 0.4s ease, visibility 0.4s; }
-        .splash-container.loader-mode.hidden { transform: scale(1); }
-        .logo-container { position: relative; width: 140px; height: 140px; margin-bottom: 2rem; transform-style: preserve-3d; }
-        .logo-ring { position: absolute; border: 3px solid transparent; border-radius: 50%; animation: rotate3d 4s linear infinite; box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
-        .logo-ring:nth-child(1) { width: 100%; height: 100%; border-top-color: #6366f1; border-right-color: #6366f1; animation-duration: 4s; }
-        .logo-ring:nth-child(2) { width: 75%; height: 75%; top: 12.5%; left: 12.5%; border-bottom-color: #8b5cf6; border-left-color: #8b5cf6; animation-duration: 3s; animation-direction: reverse; }
-        .logo-ring:nth-child(3) { width: 50%; height: 50%; top: 25%; left: 25%; border-top-color: #3b82f6; border-bottom-color: #3b82f6; animation-duration: 2s; }
-        .logo-center { position: absolute; width: 35%; height: 35%; top: 32.5%; left: 32.5%; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: pulse3d 2s ease-in-out infinite; box-shadow: 0 0 30px rgba(99, 102, 241, 0.6), 0 0 60px rgba(99, 102, 241, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.2); }
-        @keyframes rotate3d { from { transform: rotateY(0deg) rotateX(10deg); } to { transform: rotateY(360deg) rotateX(10deg); } }
-        @keyframes pulse3d { 0%, 100% { transform: scale(1) translateZ(20px); box-shadow: 0 0 30px rgba(99, 102, 241, 0.6), 0 0 60px rgba(99, 102, 241, 0.3); } 50% { transform: scale(1.1) translateZ(40px); box-shadow: 0 0 50px rgba(99, 102, 241, 0.8), 0 0 100px rgba(99, 102, 241, 0.5); } }
-        .splash-text { text-align: center; animation: fadeInUp 1s ease-out 0.5s both; }
-        .splash-title { font-size: 3.5rem; font-weight: 700; background: linear-gradient(135deg, #fff 0%, #6366f1 50%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.02em; text-shadow: 0 0 30px rgba(99, 102, 241, 0.5); }
-        .splash-subtitle { color: rgba(255, 255, 255, 0.6); font-size: 1.25rem; margin-top: 0.5rem; animation: fadeInUp 1s ease-out 0.8s both; }
-        .splash-hint { color: rgba(255, 255, 255, 0.4); font-size: 0.875rem; margin-top: 2rem; animation: fadeInUp 1s ease-out 1.2s both; }
-        .loader-dots { display: inline-flex; gap: 4px; margin-left: 4px; }
-        .loader-dots span { animation: dotPulse 1.4s ease-in-out infinite both; }
-        .loader-dots span:nth-child(1) { animation-delay: 0s; }
-        .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes dotPulse { 0%, 80%, 100% { opacity: 0; transform: scale(0); } 40% { opacity: 1; transform: scale(1); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .form-container-3d { position: relative; overflow: hidden; min-height: 520px; transform-style: preserve-3d; }
-        .form-section-3d { transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1); position: absolute; width: 100%; top: 0; left: 0; transform-style: preserve-3d; backface-visibility: hidden; }
-        .form-section-3d.login { transform: translateX(0) rotateY(0); opacity: 1; visibility: visible; }
-        .form-section-3d.signup { transform: translateX(100%) rotateY(15deg); opacity: 0; visibility: hidden; }
-        .form-container-3d.signup-active .form-section-3d.login { transform: translateX(-100%) rotateY(-15deg); opacity: 0; visibility: hidden; }
-        .form-container-3d.signup-active .form-section-3d.signup { transform: translateX(0) rotateY(0); opacity: 1; visibility: visible; }
-        .input-group-3d { position: relative; margin-bottom: 1.5rem; transform-style: preserve-3d; }
-        .input-field-3d { width: 100%; padding: 1rem 1rem 1rem 3rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; color: white; font-size: 0.95rem; transition: all 0.3s ease; outline: none; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
-        .input-field-3d:focus { border-color: #6366f1; background: rgba(99, 102, 241, 0.05); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), 0 10px 25px -5px rgba(99, 102, 241, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1); transform: translateY(-2px) translateZ(10px); }
-        .input-icon-3d { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%) translateZ(20px); color: rgba(255, 255, 255, 0.4); transition: all 0.3s ease; }
-        .input-field-3d:focus + .input-icon-3d { color: #6366f1; transform: translateY(-50%) translateZ(30px) scale(1.1); }
-        .password-strength { margin-top: 0.5rem; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; overflow: hidden; position: relative; }
-        .strength-bar { height: 100%; border-radius: 2px; transition: all 0.3s ease; width: 0%; }
-        .strength-weak { background: #ef4444; width: 25%; }
-        .strength-fair { background: #f59e0b; width: 50%; }
-        .strength-good { background: #3b82f6; width: 75%; }
-        .strength-strong { background: #10b981; width: 100%; }
-        .strength-text { font-size: 0.75rem; margin-top: 0.25rem; color: rgba(255, 255, 255, 0.5); }
-        .match-indicator { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; margin-top: 0.5rem; opacity: 0; transition: all 0.3s ease; }
-        .match-indicator.show { opacity: 1; }
-        .match-indicator.match { color: #10b981; }
-        .match-indicator.mismatch { color: #ef4444; }
-        .toggle-container-3d { display: flex; background: rgba(0, 0, 0, 0.2); border-radius: 16px; padding: 4px; margin-bottom: 2rem; position: relative; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.05); transform-style: preserve-3d; }
-        .toggle-slider-3d { position: absolute; top: 4px; left: 4px; width: calc(50% - 4px); height: calc(100% - 8px); background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 12px; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset; transform: translateZ(10px); }
-        .toggle-container-3d.signup-active .toggle-slider-3d { transform: translateX(100%) translateZ(10px); }
-        .toggle-btn-3d { flex: 1; padding: 0.875rem 1.5rem; border: none; background: transparent; color: rgba(255, 255, 255, 0.5); font-weight: 500; cursor: pointer; position: relative; z-index: 1; transition: all 0.3s ease; border-radius: 12px; transform-style: preserve-3d; }
-        .toggle-btn-3d:hover { color: rgba(255, 255, 255, 0.8); transform: translateZ(5px); }
-        .toggle-btn-3d.active { color: white; text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
-        .btn-3d { width: 100%; padding: 1rem; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border: none; border-radius: 16px; color: white; font-weight: 600; font-size: 1rem; cursor: pointer; position: relative; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3), 0 2px 4px -1px rgba(99, 102, 241, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 10px 20px -5px rgba(99, 102, 241, 0.4); transform-style: preserve-3d; }
-        .btn-3d:hover { transform: translateY(-3px) translateZ(10px); box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2) inset, 0 20px 40px -10px rgba(99, 102, 241, 0.3); }
-        .btn-3d:active { transform: translateY(-1px) translateZ(5px); }
-        .btn-3d::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transition: left 0.6s ease; }
-        .btn-3d:hover::before { left: 100%; }
-        .btn-secondary-3d { width: 100%; padding: 1rem; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; color: white; font-weight: 500; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05) inset; transform-style: preserve-3d; }
-        .btn-secondary-3d:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); transform: translateY(-2px) translateZ(5px); box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1) inset; }
-        .spinner { width: 20px; height: 20px; border: 2px solid rgba(255, 255, 255, 0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
-        .btn-3d.loading .spinner { display: inline-block; }
-        .btn-3d.loading .btn-text { display: none; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .alert-3d { padding: 1rem; border-radius: 16px; margin-bottom: 1rem; font-size: 0.9rem; display: none; animation: slideIn3d 0.4s ease; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05) inset; transform-style: preserve-3d; }
-        .alert-3d.show { display: block; }
-        .alert-error-3d { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2), 0 0 0 1px rgba(239, 68, 68, 0.2) inset; }
-        .alert-success-3d { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); color: #86efac; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2), 0 0 0 1px rgba(34, 197, 94, 0.2) inset; }
-        @keyframes slideIn3d { from { opacity: 0; transform: translateY(-20px) translateZ(-50px); } to { opacity: 1; transform: translateY(0) translateZ(0); } }
-        .dashboard { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0f; z-index: 10; padding: 2rem; }
-        .dashboard.show { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .welcome-back-3d { text-align: center; margin-bottom: 2rem; animation: fadeInUp 0.6s ease; transform-style: preserve-3d; }
-        .welcome-back-3d h2 { font-size: 1.75rem; color: white; margin-bottom: 0.5rem; text-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
-        .welcome-back-3d p { color: rgba(255, 255, 255, 0.6); font-size: 0.95rem; }
-        .avatar-circle-3d { width: 70px; height: 70px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; color: white; font-weight: 600; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4), 0 0 0 3px rgba(255, 255, 255, 0.1) inset; transform: translateZ(20px); animation: avatarFloat 3s ease-in-out infinite; }
-        @keyframes avatarFloat { 0%, 100% { transform: translateZ(20px) translateY(0); } 50% { transform: translateZ(30px) translateY(-5px); } }
-        .first-time-welcome-3d { text-align: center; margin-bottom: 2rem; animation: fadeInUp 0.6s ease; }
-        .first-time-welcome-3d h2 { font-size: 1.75rem; color: white; margin-bottom: 0.5rem; text-shadow: 0 0 20px rgba(99, 102, 241, 0.5); }
-        .first-time-welcome-3d p { color: rgba(255, 255, 255, 0.6); font-size: 0.95rem; }
-        .checkbox-3d { appearance: none; width: 1.25rem; height: 1.25rem; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 6px; background: rgba(0, 0, 0, 0.2); cursor: pointer; position: relative; transition: all 0.3s ease; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2); }
-        .checkbox-3d:checked { background: linear-gradient(135deg, #6366f1, #8b5cf6); border-color: transparent; box-shadow: 0 0 10px rgba(99, 102, 241, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2); }
-        .checkbox-3d:checked::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 0.875rem; font-weight: bold; }
-        #authContainer { opacity: 0; transition: opacity 0.5s ease; }
-        #authContainer.visible { opacity: 1; }
-        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-        .particle { position: absolute; width: 3px; height: 3px; background: rgba(99, 102, 241, 0.6); border-radius: 50%; animation: particleFloat 15s infinite linear; box-shadow: 0 0 10px rgba(99, 102, 241, 0.8); }
-        @keyframes particleFloat { 0% { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; } 10% { opacity: 1; transform: scale(1); } 90% { opacity: 1; } 100% { transform: translateY(-100vh) translateX(100px) scale(0.5); opacity: 0; } }
-        .email-toast { position: fixed; bottom: 2rem; right: 2rem; padding: 1rem 1.5rem; border-radius: 16px; font-size: 0.9rem; font-weight: 500; z-index: 1001; transform: translateX(150%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); }
-        .email-toast.show { transform: translateX(0); }
-        .email-toast.success { background: rgba(34, 197, 94, 0.15); color: #86efac; border-color: rgba(34, 197, 94, 0.3); }
-        .email-toast.error { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3); }
-        .email-toast.info { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border-color: rgba(99, 102, 241, 0.3); }
-        @media (max-width: 640px) { .splash-title { font-size: 2.5rem; } .glass-card-3d { margin: 1rem; } .email-toast { left: 1rem; right: 1rem; bottom: 1rem; } }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:#0a0a0f;overflow-x:hidden;min-height:100vh}
+        .font-display{font-family:'Space Grotesk',sans-serif}
+        .gradient-bg{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#0a0a0f 0%,#1a1a2e 50%,#16213e 100%);z-index:-3}
+        .floating-shapes{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;overflow:hidden;pointer-events:none}
+        .shape{position:absolute;opacity:.15;animation:float3d 15s infinite ease-in-out}
+        .shape-1{width:300px;height:300px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:30% 70% 70% 30%/30% 30% 70% 70%;top:10%;left:10%;animation-delay:0s;filter:blur(1px)}
+        .shape-2{width:200px;height:200px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);border-radius:70% 30% 30% 70%/70% 70% 30% 30%;top:60%;right:10%;animation-delay:-5s;filter:blur(2px)}
+        .shape-3{width:150px;height:150px;background:linear-gradient(135deg,#3b82f6,#6366f1);border-radius:50%;bottom:20%;left:20%;animation-delay:-10s;filter:blur(1px)}
+        .shape-4{width:100px;height:100px;border:2px solid rgba(99,102,241,.3);top:30%;right:30%;animation-delay:-7s;transform:rotate(45deg)}
+        @keyframes float3d{0%,100%{transform:translate(0,0) rotate(0deg) scale(1)}25%{transform:translate(30px,-30px) rotate(90deg) scale(1.1)}50%{transform:translate(-20px,20px) rotate(180deg) scale(.9)}75%{transform:translate(20px,30px) rotate(270deg) scale(1.05)}}
+        .orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.4;animation:orbFloat 20s infinite ease-in-out}
+        .orb-1{width:400px;height:400px;background:radial-gradient(circle,rgba(99,102,241,.6) 0%,transparent 70%);top:-10%;left:-10%;animation-delay:0s}
+        .orb-2{width:300px;height:300px;background:radial-gradient(circle,rgba(139,92,246,.6) 0%,transparent 70%);bottom:-10%;right:-10%;animation-delay:-5s}
+        @keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(50px,-50px) scale(1.2)}66%{transform:translate(-30px,30px) scale(.8)}}
+        .grid-lines{position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:60px 60px;z-index:-1;opacity:.3;animation:gridMove 25s linear infinite}
+        @keyframes gridMove{0%{transform:perspective(500px) rotateX(60deg) translateY(0)}100%{transform:perspective(500px) rotateX(60deg) translateY(60px)}}
+        .glass-card-3d{background:rgba(255,255,255,.05);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:24px;box-shadow:0 25px 50px -12px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.05) inset,0 0 100px rgba(99,102,241,.1) inset;transform-style:preserve-3d;perspective:1000px;transition:transform .3s ease,box-shadow .3s ease}
+        .glass-card-3d:hover{transform:translateY(-5px) rotateX(2deg);box-shadow:0 35px 60px -12px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.1) inset,0 0 120px rgba(99,102,241,.15) inset}
+        .inner-glow{position:relative;overflow:hidden}
+        .inner-glow::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(99,102,241,.1) 0%,transparent 70%);opacity:0;transition:opacity .3s ease;pointer-events:none}
+        .inner-glow:hover::before{opacity:1}
+        .splash-container{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;background:#0a0a0f;transition:opacity .8s ease,transform .8s ease,visibility .8s}
+        .splash-container.hidden{opacity:0;transform:scale(1.1);visibility:hidden;pointer-events:none}
+        .splash-container.loader-mode{background:rgba(10,10,15,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:opacity .4s ease,visibility .4s}
+        .splash-container.loader-mode.hidden{transform:scale(1)}
+        .logo-container{position:relative;width:140px;height:140px;margin-bottom:2rem;transform-style:preserve-3d}
+        .logo-ring{position:absolute;border:3px solid transparent;border-radius:50%;animation:rotate3d 4s linear infinite;box-shadow:0 0 20px rgba(99,102,241,.3)}
+        .logo-ring:nth-child(1){width:100%;height:100%;border-top-color:#6366f1;border-right-color:#6366f1;animation-duration:4s}
+        .logo-ring:nth-child(2){width:75%;height:75%;top:12.5%;left:12.5%;border-bottom-color:#8b5cf6;border-left-color:#8b5cf6;animation-duration:3s;animation-direction:reverse}
+        .logo-ring:nth-child(3){width:50%;height:50%;top:25%;left:25%;border-top-color:#3b82f6;border-bottom-color:#3b82f6;animation-duration:2s}
+        .logo-center{position:absolute;width:35%;height:35%;top:32.5%;left:32.5%;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;animation:pulse3d 2s ease-in-out infinite;box-shadow:0 0 30px rgba(99,102,241,.6),0 0 60px rgba(99,102,241,.3),inset 0 0 20px rgba(255,255,255,.2)}
+        @keyframes rotate3d{from{transform:rotateY(0deg) rotateX(10deg)}to{transform:rotateY(360deg) rotateX(10deg)}}
+        @keyframes pulse3d{0%,100%{transform:scale(1) translateZ(20px);box-shadow:0 0 30px rgba(99,102,241,.6),0 0 60px rgba(99,102,241,.3)}50%{transform:scale(1.1) translateZ(40px);box-shadow:0 0 50px rgba(99,102,241,.8),0 0 100px rgba(99,102,241,.5)}}
+        .splash-text{text-align:center;animation:fadeInUp 1s ease-out .5s both}
+        .splash-title{font-size:3.5rem;font-weight:700;background:linear-gradient(135deg,#fff 0%,#6366f1 50%,#8b5cf6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.02em;text-shadow:0 0 30px rgba(99,102,241,.5)}
+        .splash-subtitle{color:rgba(255,255,255,.6);font-size:1.25rem;margin-top:.5rem;animation:fadeInUp 1s ease-out .8s both}
+        .splash-hint{color:rgba(255,255,255,.4);font-size:.875rem;margin-top:2rem;animation:fadeInUp 1s ease-out 1.2s both}
+        .loader-dots{display:inline-flex;gap:4px;margin-left:4px}
+        .loader-dots span{animation:dotPulse 1.4s ease-in-out infinite both}
+        .loader-dots span:nth-child(1){animation-delay:0s}
+        .loader-dots span:nth-child(2){animation-delay:.2s}
+        .loader-dots span:nth-child(3){animation-delay:.4s}
+        @keyframes dotPulse{0%,80%,100%{opacity:0;transform:scale(0)}40%{opacity:1;transform:scale(1)}}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        .form-container-3d{position:relative;overflow:hidden;min-height:520px;transform-style:preserve-3d}
+        .form-section-3d{transition:all .7s cubic-bezier(.4,0,.2,1);position:absolute;width:100%;top:0;left:0;transform-style:preserve-3d;backface-visibility:hidden}
+        .form-section-3d.login{transform:translateX(0) rotateY(0);opacity:1;visibility:visible}
+        .form-section-3d.signup{transform:translateX(100%) rotateY(15deg);opacity:0;visibility:hidden}
+        .form-container-3d.signup-active .form-section-3d.login{transform:translateX(-100%) rotateY(-15deg);opacity:0;visibility:hidden}
+        .form-container-3d.signup-active .form-section-3d.signup{transform:translateX(0) rotateY(0);opacity:1;visibility:visible}
+        .input-group-3d{position:relative;margin-bottom:1.5rem;transform-style:preserve-3d}
+        .input-field-3d{width:100%;padding:1rem 1rem 1rem 3rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:16px;color:white;font-size:.95rem;transition:all .3s ease;outline:none;box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.05)}
+        .input-field-3d:focus{border-color:#6366f1;background:rgba(99,102,241,.05);box-shadow:0 0 0 3px rgba(99,102,241,.1),0 10px 25px -5px rgba(99,102,241,.2),inset 0 1px 0 rgba(255,255,255,.1);transform:translateY(-2px) translateZ(10px)}
+        .input-icon-3d{position:absolute;left:1rem;top:50%;transform:translateY(-50%) translateZ(20px);color:rgba(255,255,255,.4);transition:all .3s ease}
+        .input-field-3d:focus+.input-icon-3d{color:#6366f1;transform:translateY(-50%) translateZ(30px) scale(1.1)}
+        .password-strength{margin-top:.5rem;height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;position:relative}
+        .strength-bar{height:100%;border-radius:2px;transition:all .3s ease;width:0%}
+        .strength-weak{background:#ef4444;width:25%}
+        .strength-fair{background:#f59e0b;width:50%}
+        .strength-good{background:#3b82f6;width:75%}
+        .strength-strong{background:#10b981;width:100%}
+        .strength-text{font-size:.75rem;margin-top:.25rem;color:rgba(255,255,255,.5)}
+        .match-indicator{display:flex;align-items:center;gap:.5rem;font-size:.8rem;margin-top:.5rem;opacity:0;transition:all .3s ease}
+        .match-indicator.show{opacity:1}
+        .match-indicator.match{color:#10b981}
+        .match-indicator.mismatch{color:#ef4444}
+        .toggle-container-3d{display:flex;background:rgba(0,0,0,.2);border-radius:16px;padding:4px;margin-bottom:2rem;position:relative;box-shadow:inset 0 2px 4px rgba(0,0,0,.3),0 1px 0 rgba(255,255,255,.05);transform-style:preserve-3d}
+        .toggle-slider-3d{position:absolute;top:4px;left:4px;width:calc(50% - 4px);height:calc(100% - 8px);background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:12px;transition:transform .4s cubic-bezier(.4,0,.2,1);box-shadow:0 4px 15px rgba(99,102,241,.4),0 0 0 1px rgba(255,255,255,.1) inset;transform:translateZ(10px)}
+        .toggle-container-3d.signup-active .toggle-slider-3d{transform:translateX(100%) translateZ(10px)}
+        .toggle-btn-3d{flex:1;padding:.875rem 1.5rem;border:none;background:transparent;color:rgba(255,255,255,.5);font-weight:500;cursor:pointer;position:relative;z-index:1;transition:all .3s ease;border-radius:12px;transform-style:preserve-3d}
+        .toggle-btn-3d:hover{color:rgba(255,255,255,.8);transform:translateZ(5px)}
+        .toggle-btn-3d.active{color:white;text-shadow:0 0 10px rgba(255,255,255,.5)}
+        .btn-3d{width:100%;padding:1rem;background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);border:none;border-radius:16px;color:white;font-weight:600;font-size:1rem;cursor:pointer;position:relative;overflow:hidden;transition:all .3s ease;box-shadow:0 4px 6px -1px rgba(99,102,241,.3),0 2px 4px -1px rgba(99,102,241,.2),0 0 0 1px rgba(255,255,255,.1) inset,0 10px 20px -5px rgba(99,102,241,.4);transform-style:preserve-3d}
+        .btn-3d:hover{transform:translateY(-3px) translateZ(10px);box-shadow:0 10px 20px -5px rgba(99,102,241,.5),0 0 0 1px rgba(255,255,255,.2) inset,0 20px 40px -10px rgba(99,102,241,.3)}
+        .btn-3d:active{transform:translateY(-1px) translateZ(5px)}
+        .btn-3d::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transition:left .6s ease}
+        .btn-3d:hover::before{left:100%}
+        .btn-secondary-3d{width:100%;padding:1rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:16px;color:white;font-weight:500;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;justify-content:center;gap:.5rem;box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 0 0 1px rgba(255,255,255,.05) inset;transform-style:preserve-3d}
+        .btn-secondary-3d:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);transform:translateY(-2px) translateZ(5px);box-shadow:0 8px 15px -3px rgba(0,0,0,.2),0 0 0 1px rgba(255,255,255,.1) inset}
+        .spinner{width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;display:none}
+        .btn-3d.loading .spinner{display:inline-block}
+        .btn-3d.loading .btn-text{display:none}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .alert-3d{padding:1rem;border-radius:16px;margin-bottom:1rem;font-size:.9rem;display:none;animation:slideIn3d .4s ease;box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 0 0 1px rgba(255,255,255,.05) inset;transform-style:preserve-3d}
+        .alert-3d.show{display:block}
+        .alert-error-3d{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;box-shadow:0 4px 15px rgba(239,68,68,.2),0 0 0 1px rgba(239,68,68,.2) inset}
+        .alert-success-3d{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac;box-shadow:0 4px 15px rgba(34,197,94,.2),0 0 0 1px rgba(34,197,94,.2) inset}
+        @keyframes slideIn3d{from{opacity:0;transform:translateY(-20px) translateZ(-50px)}to{opacity:1;transform:translateY(0) translateZ(0)}}
+        .dashboard{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0f;z-index:10;padding:2rem}
+        .dashboard.show{display:block;animation:fadeIn .5s ease}
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+        .welcome-back-3d{text-align:center;margin-bottom:2rem;animation:fadeInUp .6s ease;transform-style:preserve-3d}
+        .welcome-back-3d h2{font-size:1.75rem;color:white;margin-bottom:.5rem;text-shadow:0 0 20px rgba(99,102,241,.5)}
+        .welcome-back-3d p{color:rgba(255,255,255,.6);font-size:.95rem}
+        .avatar-circle-3d{width:70px;height:70px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:50%;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:1.75rem;color:white;font-weight:600;box-shadow:0 10px 30px rgba(99,102,241,.4),0 0 0 3px rgba(255,255,255,.1) inset;transform:translateZ(20px);animation:avatarFloat 3s ease-in-out infinite}
+        @keyframes avatarFloat{0%,100%{transform:translateZ(20px) translateY(0)}50%{transform:translateZ(30px) translateY(-5px)}}
+        .first-time-welcome-3d{text-align:center;margin-bottom:2rem;animation:fadeInUp .6s ease}
+        .first-time-welcome-3d h2{font-size:1.75rem;color:white;margin-bottom:.5rem;text-shadow:0 0 20px rgba(99,102,241,.5)}
+        .first-time-welcome-3d p{color:rgba(255,255,255,.6);font-size:.95rem}
+        .checkbox-3d{appearance:none;width:1.25rem;height:1.25rem;border:2px solid rgba(255,255,255,.2);border-radius:6px;background:rgba(0,0,0,.2);cursor:pointer;position:relative;transition:all .3s ease;box-shadow:inset 0 2px 4px rgba(0,0,0,.2)}
+        .checkbox-3d:checked{background:linear-gradient(135deg,#6366f1,#8b5cf6);border-color:transparent;box-shadow:0 0 10px rgba(99,102,241,.5),inset 0 1px 0 rgba(255,255,255,.2)}
+        .checkbox-3d:checked::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:.875rem;font-weight:bold}
+        #authContainer{opacity:0;transition:opacity .5s ease}
+        #authContainer.visible{opacity:1}
+        .particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
+        .particle{position:absolute;width:3px;height:3px;background:rgba(99,102,241,.6);border-radius:50%;animation:particleFloat 15s infinite linear;box-shadow:0 0 10px rgba(99,102,241,.8)}
+        @keyframes particleFloat{0%{transform:translateY(100vh) translateX(0) scale(0);opacity:0}10%{opacity:1;transform:scale(1)}90%{opacity:1}100%{transform:translateY(-100vh) translateX(100px) scale(.5);opacity:0}}
+        .email-toast{position:fixed;bottom:2rem;right:2rem;padding:1rem 1.5rem;border-radius:16px;font-size:.9rem;font-weight:500;z-index:1001;transform:translateX(150%);transition:transform .4s cubic-bezier(.4,0,.2,1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);box-shadow:0 10px 40px rgba(0,0,0,.5)}
+        .email-toast.show{transform:translateX(0)}
+        .email-toast.success{background:rgba(34,197,94,.15);color:#86efac;border-color:rgba(34,197,94,.3)}
+        .email-toast.error{background:rgba(239,68,68,.15);color:#fca5a5;border-color:rgba(239,68,68,.3)}
+        .email-toast.info{background:rgba(99,102,241,.15);color:#a5b4fc;border-color:rgba(99,102,241,.3)}
+        @media(max-width:640px){.splash-title{font-size:2.5rem}.glass-card-3d{margin:1rem}.email-toast{left:1rem;right:1rem;bottom:1rem}}
     </style>
 </head>
 <body>
@@ -157,7 +157,7 @@
         <p class="splash-hint" id="splashHint">Checking your account...</p>
     </div>
 
-    <div class="min-h-screen flex items-center justify-center p-4" id="authContainer" style="display: none;">
+    <div class="min-h-screen flex items-center justify-center p-4" id="authContainer" style="display:none;">
         <div class="w-full max-w-md">
             <div class="glass-card-3d inner-glow p-8 relative overflow-hidden">
                 <div id="welcomeMessage"></div>
@@ -199,8 +199,12 @@
                         </form>
                         <div class="mt-6">
                             <div class="relative">
-                                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-700"></div></div>
-                                <div class="relative flex justify-center text-sm"><span class="px-2 bg-gray-900/50 text-gray-500 rounded">Or continue with</span></div>
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-700"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="px-2 bg-gray-900/50 text-gray-500 rounded">Or continue with</span>
+                                </div>
                             </div>
                             <div class="mt-6 grid grid-cols-2 gap-3">
                                 <button class="btn-secondary-3d" onclick="socialLogin('google')">
@@ -209,19 +213,23 @@
                                         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                                         <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                                         <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                                    </svg> Google
+                                    </svg>
+                                    Google
                                 </button>
                                 <button class="btn-secondary-3d" onclick="socialLogin('github')">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                                    </svg> GitHub
+                                    </svg>
+                                    GitHub
                                 </button>
                             </div>
                         </div>
                         <div class="mt-6 text-center text-sm text-gray-400">
-                            Don't have an account? <button onclick="switchMode('signup')" class="text-indigo-400 hover:text-indigo-300 font-medium ml-1 transition-colors">Create one</button>
+                            Don't have an account? 
+                            <button onclick="switchMode('signup')" class="text-indigo-400 hover:text-indigo-300 font-medium ml-1 transition-colors">Create one</button>
                         </div>
                     </div>
+
                     <div class="form-section-3d signup" id="signupSection">
                         <form id="signupForm" onsubmit="handleSignup(event)">
                             <div class="input-group-3d">
@@ -244,7 +252,7 @@
                                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                                 </svg>
-                                <div class="password-strength" id="strengthContainer" style="display: none;">
+                                <div class="password-strength" id="strengthContainer" style="display:none;">
                                     <div class="strength-bar" id="strengthBar"></div>
                                 </div>
                                 <div class="strength-text" id="strengthText"></div>
@@ -273,7 +281,8 @@
                             </button>
                         </form>
                         <div class="mt-6 text-center text-sm text-gray-400">
-                            Already have an account? <button onclick="switchMode('login')" class="text-indigo-400 hover:text-indigo-300 font-medium ml-1 transition-colors">Sign in</button>
+                            Already have an account? 
+                            <button onclick="switchMode('login')" class="text-indigo-400 hover:text-indigo-300 font-medium ml-1 transition-colors">Sign in</button>
                         </div>
                     </div>
                 </div>
@@ -306,7 +315,8 @@
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
                             <polyline points="17 6 23 6 23 12"></polyline>
-                        </svg> +12.5% this month
+                        </svg>
+                        +12.5% this month
                     </div>
                 </div>
                 <div class="glass-card-3d p-6">
@@ -325,138 +335,52 @@
 
     <script>
         const SESSION_DURATION = 12 * 60 * 60 * 1000;
-
-        // ============================================
-        // EMAILJS CONFIGURATION - YOUR CREDENTIALS
-        // ============================================
+        
         const EMAILJS_CONFIG = {
-            PUBLIC_KEY: 'mOOZzd0WMH6wQ6I79',
-            SERVICE_ID: 'service_amdcp2j',
-            TEMPLATE_ID_USER: 'template_x764frq',   // Welcome email to user
-            TEMPLATE_ID_ADMIN: 'template_xe7etq5'    // Admin notification email
+            PUBLIC_KEY: '670C-cOHJFp2ahePW',
+            SERVICE_ID: 'service_sc119ca',
+            TEMPLATE_ID: 'template_dvs6hvr'
         };
 
-        const ADMIN_EMAIL = 'smartgliss60@gmail.com';
-
         let emailjsInitialized = false;
-
         function initEmailJS() {
             if (emailjsInitialized) return;
             try {
                 emailjs.init(EMAILJS_CONFIG.PUBLIC_KEY);
                 emailjsInitialized = true;
-                console.log('EmailJS initialized successfully');
+                console.log('EmailJS initialized');
             } catch (e) {
                 console.error('EmailJS init failed:', e);
             }
         }
 
-        // Send welcome email to new user
         async function sendWelcomeEmail(name, email) {
             if (!emailjsInitialized) initEmailJS();
-
             try {
                 const templateParams = {
                     to_name: name,
                     to_email: email,
-                    from_name: 'Nexus Banking',
                     bank_name: 'Nexus Banking',
-                    signup_date: new Date().toLocaleDateString('en-US', {
-                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                    }),
+                    signup_date: new Date().toLocaleDateString('en-US', {weekday:'long',year:'numeric',month:'long',day:'numeric'}),
                     support_email: 'support@nexusbank.com',
                     login_url: window.location.origin
                 };
-
-                console.log('Sending welcome email with params:', templateParams);
-
-                const result = await emailjs.send(
-                    EMAILJS_CONFIG.SERVICE_ID,
-                    EMAILJS_CONFIG.TEMPLATE_ID_USER,
-                    templateParams
-                );
-
-                console.log('Welcome email sent to user:', email, 'Status:', result.status, 'Text:', result.text);
+                await emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID, templateParams);
+                showEmailToast('Welcome email sent! Check your inbox.', 'success');
                 return true;
-
             } catch (error) {
-                console.error('Failed to send welcome email:', error);
+                console.error('Email failed:', error);
+                showEmailToast('Email failed to send', 'error');
                 return false;
-            }
-        }
-
-        // Send admin notification email
-        async function sendAdminNotification(name, email) {
-            if (!emailjsInitialized) initEmailJS();
-
-            try {
-                const templateParams = {
-                    to_email: ADMIN_EMAIL,
-                    admin_name: 'Nexus Admin',
-                    user_name: name,
-                    user_email: email,
-                    signup_date: new Date().toLocaleDateString('en-US', {
-                        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                    }),
-                    signup_time: new Date().toLocaleTimeString('en-US'),
-                    bank_name: 'Nexus Banking',
-                    from_name: 'Nexus Banking System'
-                };
-
-                console.log('Sending admin email with params:', templateParams);
-
-                const result = await emailjs.send(
-                    EMAILJS_CONFIG.SERVICE_ID,
-                    EMAILJS_CONFIG.TEMPLATE_ID_ADMIN,
-                    templateParams
-                );
-
-                console.log('Admin notification sent to:', ADMIN_EMAIL, 'Status:', result.status, 'Text:', result.text);
-                return true;
-
-            } catch (error) {
-                console.error('Failed to send admin notification:', error);
-                return false;
-            }
-        }
-
-        // Send both emails on signup with better error handling
-        async function sendSignupEmails(name, email) {
-            showEmailToast('Sending emails...', 'info');
-
-            try {
-                // Send both emails in parallel
-                const [userResult, adminResult] = await Promise.all([
-                    sendWelcomeEmail(name, email),
-                    sendAdminNotification(name, email)
-                ]);
-
-                console.log('Email results - User:', userResult, 'Admin:', adminResult);
-
-                if (userResult && adminResult) {
-                    showEmailToast('Welcome email & admin notification sent!', 'success');
-                } else if (userResult) {
-                    showEmailToast('Welcome email sent. Admin notification failed.', 'info');
-                } else if (adminResult) {
-                    showEmailToast('Admin notified. Welcome email failed.', 'info');
-                } else {
-                    showEmailToast('Email sending failed. Check console.', 'error');
-                }
-
-                return { userResult, adminResult };
-            } catch (error) {
-                console.error('sendSignupEmails error:', error);
-                showEmailToast('Email error: ' + error.message, 'error');
-                return { userResult: false, adminResult: false };
             }
         }
 
         function showEmailToast(message, type) {
             const toast = document.getElementById('emailToast');
             toast.textContent = message;
-            toast.className = 'email-toast ' + type;
+            toast.className = 'email-toast ' + (type || 'info');
             toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 5000);
+            setTimeout(() => toast.classList.remove('show'), 4000);
         }
 
         function isAdmin(user) {
@@ -469,7 +393,7 @@
 
         const supabaseUrl = 'https://okgkawqvnygwkosoqbqb.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rZ2thd3F2bnlnd2tvc29xYnFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyODA3MjgsImV4cCI6MjA5MTg1NjcyOH0.ctfeDvcXQ9OV8TvpsRKdgf7XLBxTHLouNfGn5_fHky8';
-
+        
         let supabaseClient;
         try {
             supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
@@ -484,15 +408,9 @@
         };
 
         const safeStorage = {
-            getItem: (key) => {
-                try { return localStorage.getItem(key); } catch (e) { return null; }
-            },
-            setItem: (key, value) => {
-                try { localStorage.setItem(key, value); return true; } catch (e) { return false; }
-            },
-            removeItem: (key) => {
-                try { localStorage.removeItem(key); return true; } catch (e) { return false; }
-            }
+            getItem: (key) => { try { return localStorage.getItem(key); } catch (e) { return null; } },
+            setItem: (key, value) => { try { localStorage.setItem(key, value); return true; } catch (e) { return false; } },
+            removeItem: (key) => { try { localStorage.removeItem(key); return true; } catch (e) { return false; } }
         };
 
         function hasAccount() {
@@ -529,12 +447,12 @@
         function createParticles() {
             const container = document.getElementById('particles');
             for (let i = 0; i < 30; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 15 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                container.appendChild(particle);
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                p.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(p);
             }
         }
         createParticles();
@@ -564,26 +482,39 @@
             const strengthContainer = document.getElementById('strengthContainer');
             const strengthBar = document.getElementById('strengthBar');
             const strengthText = document.getElementById('strengthText');
-
+            
             if (password.length === 0) {
                 strengthContainer.style.display = 'none';
                 strengthText.textContent = '';
                 return;
             }
+            
             strengthContainer.style.display = 'block';
-
             let strength = 0;
             if (password.length >= 8) strength++;
             if (password.length >= 12) strength++;
             if (/[A-Z]/.test(password)) strength++;
             if (/[0-9]/.test(password)) strength++;
             if (/[^A-Za-z0-9]/.test(password)) strength++;
-
+            
             strengthBar.className = 'strength-bar';
-            if (strength <= 1) { strengthBar.classList.add('strength-weak'); strengthText.textContent = 'Weak password'; strengthText.style.color = '#ef4444'; }
-            else if (strength === 2) { strengthBar.classList.add('strength-fair'); strengthText.textContent = 'Fair password'; strengthText.style.color = '#f59e0b'; }
-            else if (strength === 3) { strengthBar.classList.add('strength-good'); strengthText.textContent = 'Good password'; strengthText.style.color = '#3b82f6'; }
-            else { strengthBar.classList.add('strength-strong'); strengthText.textContent = 'Strong password'; strengthText.style.color = '#10b981'; }
+            if (strength <= 1) {
+                strengthBar.classList.add('strength-weak');
+                strengthText.textContent = 'Weak password';
+                strengthText.style.color = '#ef4444';
+            } else if (strength === 2) {
+                strengthBar.classList.add('strength-fair');
+                strengthText.textContent = 'Fair password';
+                strengthText.style.color = '#f59e0b';
+            } else if (strength === 3) {
+                strengthBar.classList.add('strength-good');
+                strengthText.textContent = 'Good password';
+                strengthText.style.color = '#3b82f6';
+            } else {
+                strengthBar.classList.add('strength-strong');
+                strengthText.textContent = 'Strong password';
+                strengthText.style.color = '#10b981';
+            }
         }
 
         function checkPasswordMatch() {
@@ -592,16 +523,21 @@
             const matchIndicator = document.getElementById('matchIndicator');
             const matchText = document.getElementById('matchText');
             const matchIcon = document.getElementById('matchIcon');
-
-            if (confirmPassword.length === 0) { matchIndicator.classList.remove('show'); return; }
+            
+            if (confirmPassword.length === 0) {
+                matchIndicator.classList.remove('show');
+                return;
+            }
+            
             matchIndicator.classList.add('show');
-
             if (password === confirmPassword) {
-                matchIndicator.classList.add('match'); matchIndicator.classList.remove('mismatch');
+                matchIndicator.classList.add('match');
+                matchIndicator.classList.remove('mismatch');
                 matchText.textContent = 'Passwords match';
                 matchIcon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
             } else {
-                matchIndicator.classList.add('mismatch'); matchIndicator.classList.remove('match');
+                matchIndicator.classList.add('mismatch');
+                matchIndicator.classList.remove('match');
                 matchText.textContent = 'Passwords do not match';
                 matchIcon.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>';
             }
@@ -610,76 +546,58 @@
         let initialRouteDetermined = false;
 
         async function initializeApp() {
-            console.log('Initializing app...');
             const splashHint = document.getElementById('splashHint');
             const splashScreen = document.getElementById('splashScreen');
             const authContainer = document.getElementById('authContainer');
-
-            if (hasAccount()) { splashHint.textContent = 'Welcome back! Loading your account...'; }
-            else { splashHint.textContent = 'Setting up your banking experience...'; }
-
-            await new Promise(resolve => setTimeout(resolve, 2500));
+            
+            const hasExistingAccount = hasAccount();
+            splashHint.textContent = hasExistingAccount ? 'Welcome back! Loading your account...' : 'Setting up your banking experience...';
+            
+            await new Promise(r => setTimeout(r, 2500));
             splashScreen.classList.add('hidden');
             authContainer.style.display = 'flex';
-            await new Promise(resolve => setTimeout(resolve, 50));
+            await new Promise(r => setTimeout(r, 50));
             authContainer.classList.add('visible');
-
-            if (hasAccount()) { showLoginWithWelcome(); }
-            else { showSignupWelcome(); }
+            
+            hasExistingAccount ? showLoginWithWelcome() : showSignupWelcome();
             initialRouteDetermined = true;
         }
 
         function showLoginWithWelcome() {
             const userInfo = getStoredUserInfo();
-            const welcomeDiv = document.getElementById('welcomeMessage');
-            const formContainer = document.getElementById('formContainer');
-            const toggleContainer = document.getElementById('toggleContainer');
-            const loginToggle = document.getElementById('loginToggle');
-            const signupToggle = document.getElementById('signupToggle');
-            const loginSection = document.getElementById('loginSection');
-            const signupSection = document.getElementById('signupSection');
-
             const initials = userInfo.name ? userInfo.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U';
-
-            welcomeDiv.innerHTML = `
+            
+            document.getElementById('welcomeMessage').innerHTML = `
                 <div class="welcome-back-3d">
                     <div class="avatar-circle-3d">${initials}</div>
                     <h2 class="font-display">Welcome Back${userInfo.name ? ', ' + userInfo.name.split(' ')[0] : ''}!</h2>
                     <p>Sign in to access your secure account</p>
                 </div>`;
-
+            
             const emailField = document.getElementById('loginEmail');
             if (userInfo.email && emailField) emailField.value = userInfo.email;
-
-            formContainer.classList.remove('signup-active');
-            toggleContainer.classList.remove('signup-active');
-            loginToggle.classList.add('active');
-            signupToggle.classList.remove('active');
-            loginSection.style.visibility = 'visible';
-            signupSection.style.visibility = 'hidden';
+            
+            document.getElementById('formContainer').classList.remove('signup-active');
+            document.getElementById('toggleContainer').classList.remove('signup-active');
+            document.getElementById('loginToggle').classList.add('active');
+            document.getElementById('signupToggle').classList.remove('active');
+            document.getElementById('loginSection').style.visibility = 'visible';
+            document.getElementById('signupSection').style.visibility = 'hidden';
         }
 
         function showSignupWelcome() {
-            const welcomeDiv = document.getElementById('welcomeMessage');
-            const formContainer = document.getElementById('formContainer');
-            const toggleContainer = document.getElementById('toggleContainer');
-            const loginToggle = document.getElementById('loginToggle');
-            const signupToggle = document.getElementById('signupToggle');
-            const loginSection = document.getElementById('loginSection');
-            const signupSection = document.getElementById('signupSection');
-
-            welcomeDiv.innerHTML = `
+            document.getElementById('welcomeMessage').innerHTML = `
                 <div class="first-time-welcome-3d">
                     <h2 class="font-display">Create Your Account</h2>
                     <p>Join Nexus Banking for secure, smart banking</p>
                 </div>`;
-
-            formContainer.classList.add('signup-active');
-            toggleContainer.classList.add('signup-active');
-            loginToggle.classList.remove('active');
-            signupToggle.classList.add('active');
-            loginSection.style.visibility = 'hidden';
-            signupSection.style.visibility = 'visible';
+            
+            document.getElementById('formContainer').classList.add('signup-active');
+            document.getElementById('toggleContainer').classList.add('signup-active');
+            document.getElementById('loginToggle').classList.remove('active');
+            document.getElementById('signupToggle').classList.add('active');
+            document.getElementById('loginSection').style.visibility = 'hidden';
+            document.getElementById('signupSection').style.visibility = 'visible';
         }
 
         function switchMode(mode) {
@@ -689,7 +607,7 @@
             const signupToggle = document.getElementById('signupToggle');
             const loginSection = document.getElementById('loginSection');
             const signupSection = document.getElementById('signupSection');
-
+            
             if (mode === 'signup') {
                 formContainer.classList.add('signup-active');
                 toggleContainer.classList.add('signup-active');
@@ -711,7 +629,7 @@
             const alert = document.getElementById(type + 'Alert');
             alert.textContent = message;
             alert.classList.add('show');
-            setTimeout(() => { alert.classList.remove('show'); }, 5000);
+            setTimeout(() => alert.classList.remove('show'), 5000);
         }
 
         function hideAlerts() {
@@ -721,8 +639,13 @@
 
         function setLoading(btnId, loading) {
             const btn = document.getElementById(btnId);
-            if (loading) { btn.classList.add('loading'); btn.disabled = true; }
-            else { btn.classList.remove('loading'); btn.disabled = false; }
+            if (loading) {
+                btn.classList.add('loading');
+                btn.disabled = true;
+            } else {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
         }
 
         async function handleLogin(e) {
@@ -731,21 +654,21 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             showAuthLoader('Authenticating');
-
+            
             try {
                 if (!supabaseClient) throw new Error('Supabase not initialized');
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email: email, password: password });
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) throw error;
-
+                
                 if (data.user) {
                     const name = data.user.user_metadata?.full_name || '';
                     markAccountCreated(email, name);
                     safeStorage.setItem('nexus_is_admin', isAdmin(data.user).toString());
                 }
-                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                await new Promise(r => setTimeout(r, 800));
                 hideAuthLoader();
                 showDashboard(data.user);
-
             } catch (error) {
                 hideAuthLoader();
                 showAlert('error', error.message);
@@ -755,56 +678,49 @@
         async function handleSignup(e) {
             e.preventDefault();
             hideAlerts();
-
             const password = document.getElementById('signupPassword').value;
             const confirmPassword = document.getElementById('signupConfirmPassword').value;
-            if (password !== confirmPassword) { showAlert('error', 'Passwords do not match'); return; }
-
+            
+            if (password !== confirmPassword) {
+                showAlert('error', 'Passwords do not match');
+                return;
+            }
+            
             const name = document.getElementById('signupName').value;
             const email = document.getElementById('signupEmail').value;
-
             showAuthLoader('Creating your account');
-
+            
             try {
                 if (!supabaseClient) throw new Error('Supabase not initialized');
                 const { data, error } = await supabaseClient.auth.signUp({
-                    email: email, password: password,
+                    email, password,
                     options: { data: { full_name: name } }
                 });
                 if (error) throw error;
-
+                
                 if (data.user?.identities?.length === 0) {
                     hideAuthLoader();
                     showAlert('error', 'An account with this email already exists. Please sign in instead.');
                     setTimeout(() => switchMode('login'), 2000);
                     return;
                 }
-
+                
                 markAccountCreated(email, name);
-
-                // ============================================
-                // SEND EMAILS TO USER AND ADMIN
-                // ============================================
-                showAuthLoader('Sending welcome emails');
+                showAuthLoader('Sending welcome email');
                 
-                // Initialize EmailJS first
-                initEmailJS();
+                sendWelcomeEmail(name, email).then(sent => {
+                    if (sent) console.log('Welcome email dispatched successfully');
+                }).catch(err => console.error('Email dispatch error:', err));
                 
-                // Wait a bit for init, then send emails
-                await new Promise(resolve => setTimeout(resolve, 500));
-                
-                const emailResults = await sendSignupEmails(name, email);
-                console.log('Email sending completed:', emailResults);
-
-                await new Promise(resolve => setTimeout(resolve, 800));
+                await new Promise(r => setTimeout(r, 800));
                 hideAuthLoader();
-
-                if (data.session) { showDashboard(data.user); }
-                else {
+                
+                if (data.session) {
+                    showDashboard(data.user);
+                } else {
                     showAlert('success', 'Account created successfully! Welcome to Nexus.');
                     setTimeout(() => switchMode('login'), 2000);
                 }
-
             } catch (error) {
                 hideAuthLoader();
                 showAlert('error', error.message);
@@ -815,8 +731,9 @@
             showAuthLoader('Connecting to ' + provider);
             try {
                 if (!supabaseClient) throw new Error('Supabase not initialized');
-                const { data, error } = await supabaseClient.auth.signInWithOAuth({
-                    provider: provider, options: { redirectTo: window.location.origin }
+                const { error } = await supabaseClient.auth.signInWithOAuth({
+                    provider,
+                    options: { redirectTo: window.location.origin }
                 });
                 if (error) throw error;
             } catch (error) {
@@ -836,9 +753,7 @@
                 markAccountCreated(user.email, name);
                 safeStorage.setItem('nexus_is_admin', isAdmin(user).toString());
             }
-            const dashboardUrl = getDashboardUrl(user);
-            console.log('User:', user.email, '| Is Admin:', isAdmin(user), '| Redirecting to:', dashboardUrl);
-            window.location.href = dashboardUrl;
+            window.location.href = getDashboardUrl(user);
         }
 
         async function handleLogout() {
@@ -846,7 +761,7 @@
                 showAuthLoader('Signing out');
                 if (supabaseClient) await supabaseClient.auth.signOut();
                 clearAccountData();
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(r => setTimeout(r, 500));
                 window.location.href = "index.html";
             } catch (error) {
                 hideAuthLoader();
@@ -858,7 +773,6 @@
             if (!supabaseClient) return null;
             try {
                 if (isSessionExpired()) {
-                    console.log('Session expired (12 hours)');
                     await supabaseClient.auth.signOut();
                     clearAccountData();
                     return null;
@@ -870,7 +784,9 @@
                     safeStorage.setItem('nexus_is_admin', isAdmin(session.user).toString());
                     return session.user;
                 }
-            } catch (e) { console.error('Session check error:', e); }
+            } catch (e) {
+                console.error('Session check error:', e);
+            }
             return null;
         }
 
@@ -888,10 +804,8 @@
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
-            console.log('DOM loaded, initializing...');
             const existingUser = await checkSession();
             if (existingUser) {
-                console.log('User already logged in, showing dashboard');
                 document.getElementById('splashScreen').style.display = 'none';
                 document.getElementById('authContainer').style.display = 'none';
                 showDashboard(existingUser);
